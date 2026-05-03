@@ -293,3 +293,4 @@ npm run build
 ---
 
 **Statia Real Estate** © 2025
+>>>>>>> 00e07a39788a71866660d4414b5aecd4de807ca4

@@ -1,0 +1,45 @@
+import { createContext, useContext, useState } from "react";
+
+const AppContext = createContext(null);
+
+function readStorage(key, parse = false) {
+  try {
+    const v = localStorage.getItem(key);
+    return parse ? JSON.parse(v) : v;
+  } catch {
+    return null;
+  }
+}
+
+export function AppProvider({ children }) {
+  const [lang, setLangState] = useState("en");
+  const [cur, setCur] = useState("EGP");
+  const [user, setUser] = useState(() => readStorage('user', true));
+  const [toast, setToast] = useState(null);
+  const [filters, setFilters] = useState({ q: "", type: "", loc: "", price: "", rooms: "" });
+
+  const setLang = (l) => {
+    setLangState(l);
+    document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  };
+
+  const login = (userData, token) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('token', token);
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+  };
+
+  return (
+    <AppContext.Provider value={{ lang, setLang, cur, setCur, user, setUser, login, logout, toast, setToast, filters, setFilters }}>
+      {children}
+    </AppContext.Provider>
+  );
+}
+
+export const useAppContext = () => useContext(AppContext);

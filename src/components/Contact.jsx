@@ -3,6 +3,7 @@ import { MessageCircle, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { Lbl } from "./Shared";
 import { useAppContext } from "../context/AppContext";
 import { apiFetch } from "../api";
+import { sendContactEmail } from "../emailjs";
 
 export default function Contact() {
   const { lang } = useAppContext();
@@ -20,10 +21,24 @@ export default function Contact() {
     if (!form.name || !form.email) return;
     setSending(true);
     try {
-      await apiFetch('/api/leads', { method: 'POST', body: { name: form.name, email: form.email, phone: form.phone, message: form.msg } });
-      setSent(true);
+      // Send email using EmailJS
+      const emailResult = await sendContactEmail({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        message: form.msg
+      });
+      
+      if (emailResult.success) {
+        // Also save lead to database
+        await apiFetch('/api/leads', { method: 'POST', body: { name: form.name, email: form.email, phone: form.phone, message: form.msg } });
+        setSent(true);
+      } else {
+        alert('Failed to send email. Please try again.');
+      }
     } catch (e) {
       console.error(e);
+      alert('Failed to send email. Please try again.');
     } finally {
       setSending(false);
     }

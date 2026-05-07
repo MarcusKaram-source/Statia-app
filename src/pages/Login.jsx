@@ -80,8 +80,7 @@ export default function Login() {
           <div style={{ background: "rgba(201,168,76,.06)", border: "1px solid rgba(201,168,76,.15)", borderRadius: 6, padding: ".65rem 1rem", marginBottom: "1.5rem", display: "flex", gap: 9, alignItems: "flex-start" }}>
             <ShieldCheck size={14} color="var(--gold)" style={{ flexShrink: 0, marginTop: 1 }} />
             <div style={{ fontSize: ".74rem", color: "rgba(255,255,255,.5)", lineHeight: 1.6 }}>
-              <span style={{ color: "var(--gold)", fontWeight: 600 }}>Admin:</span> admin@statia.com / admin<br />
-              <span style={{ color: "var(--gold)", fontWeight: 600 }}>User:</span> user@statia.com / password
+              Please enter your credentials to access your account.
             </div>
           </div>
 

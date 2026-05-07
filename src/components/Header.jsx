@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X, Globe, Lock, LogOut, User, ShieldCheck, Heart, GitCompare } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
 import NotificationBell from "./NotificationBell";
@@ -7,6 +7,7 @@ import NotificationBell from "./NotificationBell";
 export default function Header() {
   const { lang, setLang, cur, setCur, user, logout, setToast } = useAppContext();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const [sc, setSc] = useState(false);
   const [mob, setMob] = useState(false);
   const [dd, setDd] = useState(false);
@@ -31,8 +32,10 @@ export default function Header() {
     navigate("/");
   };
 
+  const isDarkPage = pathname === "/properties" || pathname === "/projects";
+
   return (
-    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: sc ? "rgba(10,22,40,.97)" : "transparent", backdropFilter: sc ? "blur(20px)" : "none", borderBottom: sc ? "1px solid rgba(201,168,76,.15)" : "none", padding: "0 5%", transition: "all .4s" }}>
+    <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000, background: (sc || isDarkPage) ? "rgba(10,22,40,.97)" : "transparent", backdropFilter: (sc || isDarkPage) ? "blur(20px)" : "none", borderBottom: (sc || isDarkPage) ? "1px solid rgba(201,168,76,.15)" : "none", padding: "0 5%", transition: "all .4s" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 74, maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
           <div style={{ fontFamily: "var(--serif)", fontSize: "1.85rem", fontWeight: 300, letterSpacing: ".18em", color: "#fff", fontStyle: "italic", lineHeight: 1 }}>Statia</div>

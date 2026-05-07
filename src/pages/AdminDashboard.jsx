@@ -142,6 +142,14 @@ function AdminSettings({ user }) {
   const [profileErr, setProfileErr] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPass, setSavingPass] = useState(false);
+  const [socialLinks, setSocialLinks] = useState({
+    facebook: 'https://facebook.com/statia',
+    instagram: 'https://instagram.com/statia',
+    twitter: 'https://twitter.com/statia',
+    linkedin: 'https://linkedin.com/company/statia',
+    youtube: 'https://youtube.com/@statia'
+  });
+  const [savingSocial, setSavingSocial] = useState(false);
 
   const cardS = { background: "#060f1e", border: "1px solid rgba(201,168,76,.12)", borderRadius: 8, padding: "1.6rem", marginBottom: "1.3rem" };
   const secHead = { color: "rgba(255,255,255,.85)", fontSize: ".88rem", fontWeight: 700, marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: 8 };
@@ -187,6 +195,20 @@ function AdminSettings({ user }) {
       setPassErr(e.message || "Failed to update password.");
     } finally {
       setSavingPass(false);
+    }
+  };
+
+  const saveSocialLinks = async () => {
+    setSavingSocial(true);
+    try {
+      await apiFetch('/api/settings/social', { method: 'PATCH', body: socialLinks });
+      localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+      setSaved("social");
+      setTimeout(() => setSaved(""), 2200);
+    } catch (e) {
+      setProfileErr(e.message || "Failed to save social links.");
+    } finally {
+      setSavingSocial(false);
     }
   };
 
@@ -263,6 +285,34 @@ function AdminSettings({ user }) {
         <div style={{ marginTop: "1.1rem", display: "flex", alignItems: "center", gap: ".9rem" }}>
           <button className="btn-g" onClick={savePass} disabled={savingPass} style={{ borderRadius: 5, padding: "9px 22px", fontSize: ".8rem" }}>{savingPass ? "Updating…" : "Update Password"}</button>
           {saved === "pass" && <span style={{ color: "#34d399", fontSize: ".78rem", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle size={14} />Password updated!</span>}
+        </div>
+      </div>
+
+      <div style={cardS}>
+        <div style={secHead}><Bell size={15} color="var(--gold)" />Social Media Links</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".9rem" }}>
+          {[
+            { k: "facebook", label: "Facebook URL", placeholder: "https://facebook.com/statia" },
+            { k: "instagram", label: "Instagram URL", placeholder: "https://instagram.com/statia" },
+            { k: "twitter", label: "Twitter URL", placeholder: "https://twitter.com/statia" },
+            { k: "linkedin", label: "LinkedIn URL", placeholder: "https://linkedin.com/company/statia" },
+            { k: "youtube", label: "YouTube URL", placeholder: "https://youtube.com/@statia" }
+          ].map(({ k, label, placeholder }) => (
+            <div key={k}>
+              <div style={fLabel}>{label}</div>
+              <input
+                style={fInput}
+                type="url"
+                value={socialLinks[k]}
+                onChange={e => setSocialLinks(s => ({ ...s, [k]: e.target.value }))}
+                placeholder={placeholder}
+              />
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: "1.1rem", display: "flex", alignItems: "center", gap: ".9rem" }}>
+          <button className="btn-g" onClick={saveSocialLinks} disabled={savingSocial} style={{ borderRadius: 5, padding: "9px 22px", fontSize: ".8rem" }}>{savingSocial ? "Saving…" : "Save Social Links"}</button>
+          {saved === "social" && <span style={{ color: "#34d399", fontSize: ".78rem", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle size={14} />Saved!</span>}
         </div>
       </div>
 

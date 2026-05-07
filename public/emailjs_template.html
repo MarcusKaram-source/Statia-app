@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Message from Statia Real Estate</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f4;">
+    <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; font-family: system-ui, -apple-system, sans-serif, Arial; font-size: 14px; line-height: 1.6;">
+
+        <!-- Header -->
+        <div style="background-color: #2c3e50; padding: 20px; text-align: center;">
+            <h1 style="color: #ffffff; margin: 0; font-size: 24px;">Statia Real Estate</h1>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 30px;">
+            <p style="color: #333333; margin-bottom: 20px;">
+                A new message has been received. Please review the details below and respond at your earliest convenience.
+            </p>
+
+            <!-- Message Details -->
+            <div style="background-color: #f8f9fa; border-left: 4px solid #2c3e50; padding: 20px; margin: 20px 0;">
+                <h2 style="color: #2c3e50; margin-top: 0; font-size: 18px;">Message Details</h2>
+
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding: 8px 0; color: #666666; width: 120px;"><strong>From:</strong></td>
+                        <td style="padding: 8px 0;">{{from_name}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666666;"><strong>Email:</strong></td>
+                        <td style="padding: 8px 0;">{{from_email}}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px 0; color: #666666;"><strong>Phone:</strong></td>
+                        <td style="padding: 8px 0;">{{phone}}</td>
+                    </tr>
+                    {{#if project}}
+                    <tr>
+                        <td style="padding: 8px 0; color: #666666;"><strong>Project:</strong></td>
+                        <td style="padding: 8px 0;">{{project}}</td>
+                    </tr>
+                    {{/if}}
+                </table>
+
+                <div style="margin-top: 20px;">
+                    <p style="color: #666666; margin: 0 0 8px 0;"><strong>Message:</strong></p>
+                    <div style="background-color: #ffffff; padding: 15px; border-radius: 4px; border: 1px solid #e0e0e0;">
+                        {{message}}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reply Information -->
+            <div style="background-color: #e8f4f8; padding: 15px; border-radius: 4px; margin-top: 20px;">
+                <p style="margin: 0; color: #2c3e50;">
+                    <strong>Reply to:</strong> {{reply_to}}
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #2c3e50; padding: 20px; text-align: center; color: #ffffff;">
+            <p style="margin: 0;">&copy; {{year}} Statia Real Estate. All rights reserved.</p>
+        </div>
+
+    </div>
+</body>
+</html>

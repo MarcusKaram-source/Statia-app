@@ -17,6 +17,13 @@ export function AppProvider({ children }) {
   const [user, setUser] = useState(() => readStorage('user', true));
   const [toast, setToast] = useState(null);
   const [filters, setFilters] = useState({ q: "", type: "", loc: "", price: "", rooms: "" });
+  const [socialLinks, setSocialLinks] = useState(() => readStorage('socialLinks', true) || {
+    facebook: 'https://facebook.com/statia',
+    instagram: 'https://instagram.com/statia',
+    twitter: 'https://twitter.com/statia',
+    linkedin: 'https://linkedin.com/company/statia',
+    youtube: 'https://youtube.com/@statia'
+  });
 
   const setLang = (l) => {
     setLangState(l);
@@ -36,7 +43,7 @@ export function AppProvider({ children }) {
   };
 
   return (
-    <AppContext.Provider value={{ lang, setLang, cur, setCur, user, setUser, login, logout, toast, setToast, filters, setFilters }}>
+    <AppContext.Provider value={{ lang, setLang, cur, setCur, user, setUser, login, logout, toast, setToast, filters, setFilters, socialLinks, setSocialLinks }}>
       {children}
     </AppContext.Provider>
   );

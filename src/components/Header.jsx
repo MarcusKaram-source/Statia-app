@@ -24,7 +24,7 @@ export default function Header() {
     ar: { home: "الرئيسية", properties: "العقارات", projects: "المشاريع", contact: "تواصل" },
   };
 
-  const navPaths = { home: "/", properties: "/properties", projects: "/properties", contact: "/contact" };
+  const navPaths = { home: "/", properties: "/properties", projects: "/projects", contact: "/contact" };
 
   const onLogout = () => {
     logout();

@@ -19,6 +19,7 @@ import TermsOfService from "./pages/TermsOfService";
 import FavoritesPage from "./pages/FavoritesPage";
 import ComparisonPage from "./pages/ComparisonPage";
 import VerifyEmail from "./pages/VerifyEmail";
+import Projects from "./pages/Projects";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -123,6 +124,7 @@ export default function App() {
             <Route path="/favorites" element={<ErrorBoundary><FavoritesPage /></ErrorBoundary>} />
             <Route path="/comparison" element={<ErrorBoundary><ComparisonPage /></ErrorBoundary>} />
             <Route path="/verify-email" element={<ErrorBoundary><VerifyEmail /></ErrorBoundary>} />
+            <Route path="/projects" element={<ErrorBoundary><Projects /></ErrorBoundary>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

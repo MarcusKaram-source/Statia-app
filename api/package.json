@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
+    "postinstall": "prisma generate",
     "create-admin": "node scripts/createAdmin.js"
   },
   "prisma": {

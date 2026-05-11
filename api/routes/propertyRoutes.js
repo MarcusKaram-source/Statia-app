@@ -51,31 +51,39 @@ router.get('/', async (req, res) => {
     }
 
     // Filter by price range
-    if (minPrice !== undefined || maxPrice !== undefined) {
+    const minPriceVal = minPrice !== undefined && minPrice !== '' ? parseFloat(minPrice) : NaN;
+    const maxPriceVal = maxPrice !== undefined && maxPrice !== '' ? parseFloat(maxPrice) : NaN;
+    if (!isNaN(minPriceVal) || !isNaN(maxPriceVal)) {
       where.priceEGP = {};
-      if (minPrice !== undefined) where.priceEGP.gte = parseFloat(minPrice);
-      if (maxPrice !== undefined) where.priceEGP.lte = parseFloat(maxPrice);
+      if (!isNaN(minPriceVal)) where.priceEGP.gte = minPriceVal;
+      if (!isNaN(maxPriceVal)) where.priceEGP.lte = maxPriceVal;
     }
 
     // Filter by area range
-    if (minArea !== undefined || maxArea !== undefined) {
+    const minAreaVal = minArea !== undefined && minArea !== '' ? parseFloat(minArea) : NaN;
+    const maxAreaVal = maxArea !== undefined && maxArea !== '' ? parseFloat(maxArea) : NaN;
+    if (!isNaN(minAreaVal) || !isNaN(maxAreaVal)) {
       where.area = {};
-      if (minArea !== undefined) where.area.gte = parseFloat(minArea);
-      if (maxArea !== undefined) where.area.lte = parseFloat(maxArea);
+      if (!isNaN(minAreaVal)) where.area.gte = minAreaVal;
+      if (!isNaN(maxAreaVal)) where.area.lte = maxAreaVal;
     }
 
     // Filter by rooms range
-    if (minRooms !== undefined || maxRooms !== undefined) {
+    const minRoomsVal = minRooms !== undefined && minRooms !== '' ? parseInt(minRooms) : NaN;
+    const maxRoomsVal = maxRooms !== undefined && maxRooms !== '' ? parseInt(maxRooms) : NaN;
+    if (!isNaN(minRoomsVal) || !isNaN(maxRoomsVal)) {
       where.rooms = {};
-      if (minRooms !== undefined) where.rooms.gte = parseInt(minRooms);
-      if (maxRooms !== undefined) where.rooms.lte = parseInt(maxRooms);
+      if (!isNaN(minRoomsVal)) where.rooms.gte = minRoomsVal;
+      if (!isNaN(maxRoomsVal)) where.rooms.lte = maxRoomsVal;
     }
 
     // Filter by baths range
-    if (minBaths !== undefined || maxBaths !== undefined) {
+    const minBathsVal = minBaths !== undefined && minBaths !== '' ? parseInt(minBaths) : NaN;
+    const maxBathsVal = maxBaths !== undefined && maxBaths !== '' ? parseInt(maxBaths) : NaN;
+    if (!isNaN(minBathsVal) || !isNaN(maxBathsVal)) {
       where.baths = {};
-      if (minBaths !== undefined) where.baths.gte = parseInt(minBaths);
-      if (maxBaths !== undefined) where.baths.lte = parseInt(maxBaths);
+      if (!isNaN(minBathsVal)) where.baths.gte = minBathsVal;
+      if (!isNaN(maxBathsVal)) where.baths.lte = maxBathsVal;
     }
 
     // Filter by location

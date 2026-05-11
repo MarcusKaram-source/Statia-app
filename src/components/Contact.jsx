@@ -67,13 +67,13 @@ export default function Contact() {
               <h3 style={{ fontFamily: "var(--serif)", color: "#fff", fontSize: "1.4rem", marginBottom: "1.6rem", fontWeight: 400 }}>{t.send}</h3>
               <div className="form-2col">
                 {[[t.name, "name"], [t.phone, "phone"]].map(([lbl, k]) => (
-                  <div key={k}><Lbl light>{lbl}</Lbl><input className="li-dark" style={{ ...iS }} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} /></div>
+                  <div key={k}><Lbl light>{lbl}</Lbl><input id={k} name={k} className="li-dark" style={{ ...iS }} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} /></div>
                 ))}
               </div>
               <Lbl light>{t.email}</Lbl>
-              <input className="li-dark" style={{ ...iS }} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <input id="email" name="email" type="email" className="li-dark" style={{ ...iS }} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
               <Lbl light>{t.msg}</Lbl>
-              <textarea className="li-dark" style={{ ...iS, height: 105, resize: "vertical" }} value={form.msg} onChange={e => setForm(f => ({ ...f, msg: e.target.value }))} />
+              <textarea id="msg" name="msg" className="li-dark" style={{ ...iS, height: 105, resize: "vertical" }} value={form.msg} onChange={e => setForm(f => ({ ...f, msg: e.target.value }))} />
               <button className="btn-g" onClick={handleSend} disabled={sending} style={{ borderRadius: 4, padding: 12, width: "100%", fontSize: ".86rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
                 {sending ? <LoadingSpinner size={16} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" /> : <>{t.send} <ArrowRight size={14} /></>}
               </button>

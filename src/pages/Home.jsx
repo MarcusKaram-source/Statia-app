@@ -15,7 +15,7 @@ export default function Home() {
 
   useEffect(() => {
     apiFetch('/api/properties')
-      .then(data => setFeatured(data.slice(0, 3)))
+      .then(data => setFeatured((data.properties || []).slice(0, 3)))
       .catch(console.error);
   }, []);
 

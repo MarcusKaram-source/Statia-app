@@ -121,15 +121,29 @@ router.post('/login', [
   }
 });
 
-// Get current session user (restore on page load)
-router.get('/me', auth, async (req, res) => {
+// Get current session user (restore on page load).
+// Returns 200 { user: null } when not authenticated to avoid browser console red errors.
+router.get('/me', async (req, res) => {
   try {
+    let token = req.cookies?.token;
+    if (!token) {
+      const authHeader = req.header('Authorization');
+      if (authHeader) token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : authHeader;
+    }
+    if (!token) return res.json({ user: null });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, JWT_SECRET);
+    } catch {
+      return res.json({ user: null });
+    }
+
     const user = await prisma.user.findUnique({
-      where: { id: req.user.id },
+      where: { id: decoded.id },
       select: { id: true, name: true, email: true, role: true, isEmailVerified: true }
     });
-    if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ user });
+    res.json({ user: user || null });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Server error' });

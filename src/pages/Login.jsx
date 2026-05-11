@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck } from "lucide-react";
 import { Lbl } from "../components/Shared";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useAppContext } from "../context/AppContext";
 import { apiFetch } from "../api";
 
@@ -20,7 +21,7 @@ export default function Login() {
     setLoading(true);
     try {
       const data = await apiFetch('/api/auth/login', { method: 'POST', body: { email, password: pass } });
-      login(data.user, data.token);
+      login(data.user);
       setToast({ msg: `Welcome back, ${data.user.name}!`, type: "success" });
       navigate(data.user.role === 'ADMIN' ? '/admin' : '/');
     } catch (e) {
@@ -73,19 +74,20 @@ export default function Login() {
           <Lbl light>Password</Lbl>
           <div className="auth-input-wrap" style={{ marginBottom: ".5rem" }}>
             <Lock size={15} className="auth-icon" />
-            <input className="li-dark" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="•••••••" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
+            <input className="li-dark" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="••••••••" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
             <button className="auth-eye" onClick={() => setShowPass(!showPass)}>{showPass ? <EyeOff size={15} /> : <Eye size={15} />}</button>
           </div>
 
           <div style={{ background: "rgba(201,168,76,.06)", border: "1px solid rgba(201,168,76,.15)", borderRadius: 6, padding: ".65rem 1rem", marginBottom: "1.5rem", display: "flex", gap: 9, alignItems: "flex-start" }}>
             <ShieldCheck size={14} color="var(--gold)" style={{ flexShrink: 0, marginTop: 1 }} />
             <div style={{ fontSize: ".74rem", color: "rgba(255,255,255,.5)", lineHeight: 1.6 }}>
-              Please enter your credentials to access your account.
+              <span style={{ color: "var(--gold)", fontWeight: 600 }}>Demo Accounts:</span><br />
+              Contact support for demo credentials
             </div>
           </div>
 
           <button className="btn-g" onClick={handle} disabled={loading} style={{ width: "100%", padding: "13px", borderRadius: 6, fontSize: ".9rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-            {loading ? <div style={{ width: 18, height: 18, border: "2px solid rgba(10,22,40,.3)", borderTopColor: "var(--navy)", borderRadius: "50%", animation: "spin .7s linear infinite" }} /> : <><Lock size={15} />Sign In</>}
+            {loading ? <LoadingSpinner size={18} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" /> : <><Lock size={15} />Sign In</>}
           </button>
 
           <div style={{ textAlign: "center", marginTop: "1.5rem" }}>

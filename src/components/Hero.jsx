@@ -11,12 +11,12 @@ export default function Hero() {
   };
   const [l1, l2, sub, cta1, cta2] = lines[lang];
   return (
-    <section style={{ position: "relative", height: "100vh", minHeight: 660, overflow: "hidden" }}>
+    <section style={{ position: "relative", height: "100svh", minHeight: "min(660px,100vh)", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0, backgroundImage: "url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1800&q=90')", backgroundSize: "cover", backgroundPosition: "center" }} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(135deg,rgba(10,22,40,.93) 0%,rgba(15,32,68,.72) 55%,rgba(10,22,40,.55) 100%)" }} />
-      <div className="float" style={{ position: "absolute", top: "18%", right: "7%", width: 260, height: 260, border: "1px solid rgba(201,168,76,.1)", borderRadius: "50%", pointerEvents: "none" }} />
-      <div className="float" style={{ position: "absolute", top: "24%", right: "10.5%", width: 165, height: 165, border: "1px solid rgba(201,168,76,.16)", borderRadius: "50%", pointerEvents: "none", animationDelay: "1.2s" }} />
-      <div style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "0 8%", maxWidth: 1400, margin: "0 auto" }}>
+      <div className="float hero-circle" style={{ top: "18%", right: "7%", width: 260, height: 260, border: "1px solid rgba(201,168,76,.1)" }} />
+      <div className="float hero-circle" style={{ top: "24%", right: "10.5%", width: 165, height: 165, border: "1px solid rgba(201,168,76,.16)", animationDelay: "1.2s" }} />
+      <div style={{ position: "relative", zIndex: 10, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", padding: "74px 8% 2rem", maxWidth: 1400, margin: "0 auto" }}>
         <div className="fadeUp d1" style={{ display: "flex", alignItems: "center", gap: 11, marginBottom: "1.3rem" }}>
           <div style={{ width: 34, height: 1, background: "var(--gold)" }} />
           <span style={{ color: "var(--gold)", fontSize: ".7rem", letterSpacing: ".26em", textTransform: "uppercase" }}>Premium Collection 2025</span>

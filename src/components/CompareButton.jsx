@@ -1,32 +1,31 @@
 import { useState, useEffect } from "react";
 import { GitCompare } from "lucide-react";
 import api from "../api";
+import { useAppContext } from "../context/AppContext";
 
 export default function CompareButton({ propertyId, style = {} }) {
+  const { user, setToast } = useAppContext();
   const [isCompared, setIsCompared] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     const checkComparison = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
         const response = await api.get(`/api/comparisons/check/${propertyId}`);
-        setIsCompared(response.data.isCompared);
+        setIsCompared(response.isCompared);
       } catch (error) {
         console.error("Error checking comparison:", error);
       }
     };
 
     checkComparison();
-  }, [propertyId]);
+  }, [propertyId, user]);
 
   const toggleComparison = async (e) => {
     e.stopPropagation();
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to add properties to comparison");
+    if (!user) {
+      setToast({ msg: "Please login to add properties to comparison", type: "info" });
       return;
     }
 
@@ -41,7 +40,7 @@ export default function CompareButton({ propertyId, style = {} }) {
       }
     } catch (error) {
       console.error("Error toggling comparison:", error);
-      alert("Failed to update comparison. Please try again.");
+      setToast({ msg: "Failed to update comparison. Please try again.", type: "error" });
     } finally {
       setLoading(false);
     }

@@ -62,7 +62,7 @@ export default function Header() {
 
           {user ? (
             <>
-              <div style={{ display: "flex", gap: "0.5rem" }}>
+              <div className="hd-ext" style={{ display: "flex", gap: "0.5rem" }}>
                 <button
                   onClick={() => navigate("/favorites")}
                   style={{
@@ -161,6 +161,14 @@ export default function Header() {
           {navKeys.map(k => (
             <button key={k} className="navlink" onClick={() => { navigate(navPaths[k]); setMob(false); }} style={{ display: "block", padding: ".65rem 0", width: "100%", textAlign: lang === "ar" ? "right" : "left" }}>{navLabels[lang][k]}</button>
           ))}
+          {user && (
+            <>
+              <div style={{ height: 1, background: "rgba(201,168,76,.12)", margin: ".55rem 0" }} />
+              <button className="navlink" onClick={() => { navigate("/favorites"); setMob(false); }} style={{ display: "block", padding: ".65rem 0", width: "100%", textAlign: lang === "ar" ? "right" : "left" }}>{lang === "ar" ? "المفضلة" : "Favorites"}</button>
+              <button className="navlink" onClick={() => { navigate("/comparison"); setMob(false); }} style={{ display: "block", padding: ".65rem 0", width: "100%", textAlign: lang === "ar" ? "right" : "left" }}>{lang === "ar" ? "المقارنة" : "Compare"}</button>
+              <button className="navlink" onClick={() => { navigate("/profile"); setMob(false); }} style={{ display: "block", padding: ".65rem 0", width: "100%", textAlign: lang === "ar" ? "right" : "left" }}>{lang === "ar" ? "ملفي الشخصي" : "My Profile"}</button>
+            </>
+          )}
           {!user && <button className="btn-g" onClick={() => { navigate("/login"); setMob(false); }} style={{ marginTop: ".75rem", width: "100%", borderRadius: 4, padding: "10px", fontSize: ".82rem" }}>Log In</button>}
         </div>
       )}

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Search, SlidersHorizontal, X, ChevronDown, ChevronUp } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
+import LoadingSpinner from "./LoadingSpinner";
 
-export default function AdvancedFilters({ onFilterChange, onSearch }) {
+export default function AdvancedFilters({ onFilterChange, onSearch, loading }) {
   const { lang } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
   const [filters, setFilters] = useState({
@@ -588,27 +589,32 @@ export default function AdvancedFilters({ onFilterChange, onSearch }) {
             </button>
             <button
               onClick={handleApplyFilters}
+              disabled={loading}
               style={{
                 padding: "12px 24px",
-                background: "var(--gold)",
+                background: loading ? "rgba(201,168,76,0.5)" : "var(--gold)",
                 color: "var(--navy)",
                 border: "none",
                 borderRadius: 6,
-                cursor: "pointer",
+                cursor: loading ? "not-allowed" : "pointer",
                 fontSize: "0.95rem",
                 fontWeight: 600,
                 transition: "all 0.3s ease"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "var(--navy)";
-                e.currentTarget.style.color = "var(--gold)";
+                if (!loading) {
+                  e.currentTarget.style.background = "var(--navy)";
+                  e.currentTarget.style.color = "var(--gold)";
+                }
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "var(--gold)";
-                e.currentTarget.style.color = "var(--navy)";
+                if (!loading) {
+                  e.currentTarget.style.background = "var(--gold)";
+                  e.currentTarget.style.color = "var(--navy)";
+                }
               }}
             >
-              {t.apply}
+              {loading ? <LoadingSpinner size={16} thickness={2} trackColor="rgba(10,22,40,.3)" /> : t.apply}
             </button>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Navigate, useNavigate } from "react-router-
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { Toast } from "./components/Shared";
+import LoadingSpinner from "./components/LoadingSpinner";
 import { useAppContext } from "./context/AppContext";
 import { setUnauthorizedHandler } from "./api";
 import Home from "./pages/Home";
@@ -17,6 +18,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import FavoritesPage from "./pages/FavoritesPage";
 import ComparisonPage from "./pages/ComparisonPage";
+import VerifyEmail from "./pages/VerifyEmail";
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -80,7 +82,7 @@ class ErrorBoundary extends React.Component {
 const NO_SHELL = ["/login", "/signup", "/admin"];
 
 export default function App() {
-  const { lang, toast, setToast, logout } = useAppContext();
+  const { lang, toast, setToast, logout, sessionLoading } = useAppContext();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const hideShell = NO_SHELL.includes(pathname);
@@ -93,6 +95,14 @@ export default function App() {
     });
   }, [logout, setToast, navigate]);
 
+  if (sessionLoading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "100vh", background: "var(--navy)" }}>
+        <LoadingSpinner size={36} />
+      </div>
+    );
+  }
+
   return (
     <ErrorBoundary>
       <div dir={lang === "ar" ? "rtl" : "ltr"}>
@@ -100,18 +110,19 @@ export default function App() {
         {!hideShell && <Header />}
         <main>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/properties" element={<Properties />} />
-            <Route path="/properties/:id" element={<Detail />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-            <Route path="/terms" element={<TermsOfService />} />
-            <Route path="/favorites" element={<FavoritesPage />} />
-            <Route path="/comparison" element={<ComparisonPage />} />
+            <Route path="/" element={<ErrorBoundary><Home /></ErrorBoundary>} />
+            <Route path="/login" element={<ErrorBoundary><Login /></ErrorBoundary>} />
+            <Route path="/signup" element={<ErrorBoundary><Signup /></ErrorBoundary>} />
+            <Route path="/admin" element={<ErrorBoundary><AdminDashboard /></ErrorBoundary>} />
+            <Route path="/properties" element={<ErrorBoundary><Properties /></ErrorBoundary>} />
+            <Route path="/properties/:id" element={<ErrorBoundary><Detail /></ErrorBoundary>} />
+            <Route path="/contact" element={<ErrorBoundary><ContactPage /></ErrorBoundary>} />
+            <Route path="/profile" element={<ErrorBoundary><Profile /></ErrorBoundary>} />
+            <Route path="/privacy" element={<ErrorBoundary><PrivacyPolicy /></ErrorBoundary>} />
+            <Route path="/terms" element={<ErrorBoundary><TermsOfService /></ErrorBoundary>} />
+            <Route path="/favorites" element={<ErrorBoundary><FavoritesPage /></ErrorBoundary>} />
+            <Route path="/comparison" element={<ErrorBoundary><ComparisonPage /></ErrorBoundary>} />
+            <Route path="/verify-email" element={<ErrorBoundary><VerifyEmail /></ErrorBoundary>} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>

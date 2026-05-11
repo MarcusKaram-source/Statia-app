@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id                 String        @id @default(uuid())
+  name               String
+  email              String        @unique
+  password           String
+  role               Role          @default(USER)
+  failedAttempts     Int           @default(0)
+  lockUntil          DateTime?
+  isEmailVerified    Boolean       @default(false)
+  emailVerifyToken   String?       @unique
+  createdAt          DateTime      @default(now())
+  favorites          Favorite[]
+  comparisons        Comparison[]
+  notifications      Notification[]
+
+  @@index([email])
+  @@index([emailVerifyToken])
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Project {
+  id          String       @id @default(uuid())
+  name        String
+  nameAr      String
+  location    String
+  locationAr  String?
+  type        String
+  status      String
+  priceEGP    Float
+  priceSAR    Float?
+  priceAED    Float?
+  rooms       Int
+  baths       Int
+  area        Float
+  badge       String?
+  rating      Float?
+  description String?
+  amenities   String[]
+  img         String?
+  createdAt   DateTime     @default(now())
+  leads       Lead[]
+  favorites   Favorite[]
+  comparisons Comparison[]
+  
+  @@index([type])
+  @@index([status])
+  @@index([priceEGP])
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  message   String?
+  status    LeadStatus @default(NEW)
+  project   Project?   @relation(fields: [projectId], references: [id])
+  projectId String?
+  createdAt DateTime   @default(now())
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  CLOSED
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  projectId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+}
+
+model Comparison {
+  id        String   @id @default(uuid())
+  userId    String
+  projectId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, projectId])
+}
+
+model Notification {
+  id        String            @id @default(uuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean           @default(false)
+  createdAt DateTime          @default(now())
+  
+  @@index([userId])
+  @@index([read])
+}
+
+enum NotificationType {
+  NEW_PROPERTY
+  PRICE_CHANGE
+  LEAD_RESPONSE
+  REMINDER
+}

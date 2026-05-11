@@ -2,11 +2,11 @@ import { useState } from "react";
 import { MessageCircle, Phone, Mail, MapPin, ArrowRight } from "lucide-react";
 import { Lbl } from "./Shared";
 import { useAppContext } from "../context/AppContext";
+import LoadingSpinner from "./LoadingSpinner";
 import { apiFetch } from "../api";
-import { sendContactEmail } from "../emailjs";
 
 export default function Contact() {
-  const { lang } = useAppContext();
+  const { lang, setToast } = useAppContext();
   const labels = {
     en: { title: "Begin Your Journey", sub: "Our advisors are ready to guide you.", name: "Full Name", phone: "Phone", email: "Email Address", msg: "Your Message", send: "Send Enquiry", ok: "Message Received!", okSub: "Our team will contact you within 24 hours.", again: "Send Another" },
     ar: { title: "ابدأ رحلتك", sub: "مستشارونا جاهزون لإرشادك.", name: "الاسم الكامل", phone: "رقم الهاتف", email: "البريد الإلكتروني", msg: "رسالتك", send: "إرسال الاستفسار", ok: "تم استلام رسالتك!", okSub: "سيتواصل معك فريقنا خلال 24 ساعة.", again: "إرسال مجدداً" },
@@ -21,24 +21,13 @@ export default function Contact() {
     if (!form.name || !form.email) return;
     setSending(true);
     try {
-      // Send email using EmailJS
-      const emailResult = await sendContactEmail({
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        message: form.msg
-      });
-      
-      if (emailResult.success) {
-        // Also save lead to database
-        await apiFetch('/api/leads', { method: 'POST', body: { name: form.name, email: form.email, phone: form.phone, message: form.msg } });
-        setSent(true);
-      } else {
-        alert('Failed to send email. Please try again.');
-      }
+      await apiFetch('/api/leads', { method: 'POST', body: { name: form.name, email: form.email, phone: form.phone, message: form.msg } });
+      setSent(true);
+      // Reset form after successful submission
+      setForm({ name: "", phone: "", email: "", msg: "" });
     } catch (e) {
-      console.error(e);
-      alert('Failed to send email. Please try again.');
+      console.error("Error submitting contact form:", e);
+      setToast({ msg: "Failed to send message. Please try again.", type: "error" });
     } finally {
       setSending(false);
     }
@@ -46,14 +35,14 @@ export default function Contact() {
 
   return (
     <section style={{ background: "linear-gradient(135deg,var(--navy),var(--navy2))", padding: "5rem 5%" }}>
-      <div style={{ maxWidth: 1060, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "4rem", alignItems: "center" }}>
+      <div style={{ maxWidth: 1060, margin: "0 auto" }} className="ct-grid">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: 9, marginBottom: "1.3rem" }}>
             <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg,transparent,var(--gold))" }} />
             <span style={{ color: "var(--gold)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{lang === "en" ? "Get in Touch" : "تواصل معنا"}</span>
             <div style={{ flex: 1, height: 1, background: "linear-gradient(90deg,var(--gold),transparent)" }} />
           </div>
-          <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.7rem", color: "#fff", fontWeight: 300, lineHeight: 1.1, marginBottom: ".9rem" }}>{t.title}</h2>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.9rem,4vw,2.7rem)", color: "#fff", fontWeight: 300, lineHeight: 1.1, marginBottom: ".9rem" }}>{t.title}</h2>
           <p style={{ color: "rgba(255,255,255,.48)", fontSize: ".9rem", lineHeight: 1.8, marginBottom: "2.25rem" }}>{t.sub}</p>
           {[[<MessageCircle size={18} />, "WhatsApp", "+20 100 000 0000", "#25D366", "rgba(37,211,102,.1)"], [<Phone size={18} />, lang === "en" ? "Phone" : "هاتف", "+20 2 1234 5678", "var(--gold)", "rgba(201,168,76,.1)"], [<Mail size={18} />, lang === "en" ? "Email" : "بريد", "info@statia.com", "var(--gold)", "rgba(201,168,76,.1)"], [<MapPin size={18} />, lang === "en" ? "Office" : "مكتب", "New Cairo, Egypt", "var(--gold)", "rgba(201,168,76,.1)"]].map(([ic, lbl, val, col, bg], i) => (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: ".9rem", marginBottom: "1.1rem", cursor: "pointer" }}>
@@ -76,7 +65,7 @@ export default function Contact() {
           ) : (
             <>
               <h3 style={{ fontFamily: "var(--serif)", color: "#fff", fontSize: "1.4rem", marginBottom: "1.6rem", fontWeight: 400 }}>{t.send}</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0 .9rem" }}>
+              <div className="form-2col">
                 {[[t.name, "name"], [t.phone, "phone"]].map(([lbl, k]) => (
                   <div key={k}><Lbl light>{lbl}</Lbl><input className="li-dark" style={{ ...iS }} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} /></div>
                 ))}
@@ -86,7 +75,7 @@ export default function Contact() {
               <Lbl light>{t.msg}</Lbl>
               <textarea className="li-dark" style={{ ...iS, height: 105, resize: "vertical" }} value={form.msg} onChange={e => setForm(f => ({ ...f, msg: e.target.value }))} />
               <button className="btn-g" onClick={handleSend} disabled={sending} style={{ borderRadius: 4, padding: 12, width: "100%", fontSize: ".86rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
-                {sending ? <div style={{ width: 16, height: 16, border: "2px solid rgba(10,22,40,.3)", borderTopColor: "var(--navy)", borderRadius: "50%", animation: "spin .7s linear infinite" }} /> : <>{t.send} <ArrowRight size={14} /></>}
+                {sending ? <LoadingSpinner size={16} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" /> : <>{t.send} <ArrowRight size={14} /></>}
               </button>
             </>
           )}

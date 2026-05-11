@@ -6,8 +6,9 @@ import {
 } from "lucide-react";
 import { useAppContext } from "../context/AppContext";
 import { apiFetch } from "../api";
+import LoadingSpinner from "../components/LoadingSpinner";
 
-/* ── Modal helpers ─────────────────────────────────── */
+/* ── Modal helpers ─────────────────────────────────────────── */
 const MODAL_OVERLAY = { position: "fixed", inset: 0, background: "rgba(0,0,0,.72)", zIndex: 9000, display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(4px)" };
 const MODAL_BOX = { background: "#0a1628", border: "1px solid rgba(201,168,76,.2)", borderRadius: 10, padding: "2rem", width: "min(540px,95vw)", maxHeight: "90vh", overflowY: "auto", position: "relative" };
 const MI = { width: "100%", padding: "10px 13px", borderRadius: 5, background: "rgba(255,255,255,.05)", border: "1px solid rgba(201,168,76,.18)", color: "#fff", fontSize: ".84rem", fontFamily: "var(--sans)", outline: "none", boxSizing: "border-box", marginBottom: ".9rem" };
@@ -129,7 +130,31 @@ function EditPropertyModal({ property, onClose, onSave }) {
   );
 }
 
-/* ── Admin Settings ─────────────────────────────────── */
+function ConfirmModal({ name, type, onConfirm, onClose }) {
+  return (
+    <div style={MODAL_OVERLAY} onClick={e => e.target === e.currentTarget && onClose()}>
+      <div style={{ ...MODAL_BOX, width: "min(400px,95vw)", padding: "1.8rem" }}>
+        <button onClick={onClose} style={{ position: "absolute", top: 14, right: 14, background: "none", border: "none", color: "rgba(255,255,255,.35)", cursor: "pointer" }}><X size={16} /></button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: "1rem" }}>
+          <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(248,113,113,.12)", border: "1px solid rgba(248,113,113,.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <Trash2 size={16} color="#f87171" />
+          </div>
+          <div style={{ fontFamily: "var(--serif)", color: "#fff", fontSize: "1.2rem", fontWeight: 300 }}>Confirm Delete</div>
+        </div>
+        <div style={{ height: 1, background: "linear-gradient(90deg,rgba(248,113,113,.4),transparent)", marginBottom: "1.2rem" }} />
+        <p style={{ color: "rgba(255,255,255,.55)", fontSize: ".84rem", lineHeight: 1.6, marginBottom: "1.4rem" }}>
+          Are you sure you want to delete the {type} <strong style={{ color: "#fff" }}>{name}</strong>? This action cannot be undone.
+        </p>
+        <div style={{ display: "flex", gap: ".75rem" }}>
+          <button onClick={onConfirm} style={{ flex: 1, background: "rgba(248,113,113,.15)", border: "1px solid rgba(248,113,113,.4)", borderRadius: 5, padding: "10px", color: "#f87171", fontSize: ".84rem", cursor: "pointer", fontFamily: "var(--sans)", fontWeight: 600 }}>Delete</button>
+          <button className="btn-o" onClick={onClose} style={{ borderRadius: 5, padding: "10px 18px", fontSize: ".84rem" }}>Cancel</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Admin Settings ─────────────────────────────────────────── */
 function AdminSettings({ user }) {
   const [profile, setProfile] = useState({ name: user.name, email: user.email, phone: "+20 100 000 0000", title: "Super Administrator", department: "Management", location: "New Cairo, Egypt" });
   const [passForm, setPassForm] = useState({ current: "", next: "", confirm: "" });
@@ -142,14 +167,6 @@ function AdminSettings({ user }) {
   const [profileErr, setProfileErr] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPass, setSavingPass] = useState(false);
-  const [socialLinks, setSocialLinks] = useState({
-    facebook: 'https://facebook.com/statia',
-    instagram: 'https://instagram.com/statia',
-    twitter: 'https://twitter.com/statia',
-    linkedin: 'https://linkedin.com/company/statia',
-    youtube: 'https://youtube.com/@statia'
-  });
-  const [savingSocial, setSavingSocial] = useState(false);
 
   const cardS = { background: "#060f1e", border: "1px solid rgba(201,168,76,.12)", borderRadius: 8, padding: "1.6rem", marginBottom: "1.3rem" };
   const secHead = { color: "rgba(255,255,255,.85)", fontSize: ".88rem", fontWeight: 700, marginBottom: "1.2rem", display: "flex", alignItems: "center", gap: 8 };
@@ -170,7 +187,6 @@ function AdminSettings({ user }) {
     try {
       const updated = await apiFetch('/api/auth/profile', { method: 'PATCH', body: { name: profile.name, email: profile.email } });
       setUser(updated);
-      localStorage.setItem('user', JSON.stringify(updated));
       setSaved("profile");
       setTimeout(() => setSaved(""), 2200);
     } catch (e) {
@@ -179,7 +195,6 @@ function AdminSettings({ user }) {
       setSavingProfile(false);
     }
   };
-
   const savePass = async () => {
     setPassErr("");
     if (!passForm.current) { setPassErr("Enter current password."); return; }
@@ -198,31 +213,12 @@ function AdminSettings({ user }) {
     }
   };
 
-  const saveSocialLinks = async () => {
-    setSavingSocial(true);
-    try {
-      await apiFetch('/api/settings/social', { method: 'PATCH', body: socialLinks });
-      localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
-      setSaved("social");
-      setTimeout(() => setSaved(""), 2200);
-    } catch (e) {
-      setProfileErr(e.message || "Failed to save social links.");
-    } finally {
-      setSavingSocial(false);
-    }
-  };
-
   const Toggle = ({ on, fn }) => (
     <div onClick={fn} style={{ width: 38, height: 20, borderRadius: 10, background: on ? "var(--gold)" : "rgba(255,255,255,.1)", cursor: "pointer", position: "relative", transition: "background .25s", flexShrink: 0 }}>
       <div style={{ position: "absolute", top: 3, left: on ? 19 : 3, width: 14, height: 14, borderRadius: "50%", background: on ? "var(--navy)" : "rgba(255,255,255,.5)", transition: "left .25s" }} />
     </div>
   );
 
-  const sessions = [
-    { device: "Chrome on Windows", location: "Cairo, Egypt", time: "Active now", current: true },
-    { device: "Safari on iPhone", location: "Cairo, Egypt", time: "2 hours ago", current: false },
-    { device: "Firefox on MacOS", location: "Dubai, UAE", time: "Yesterday", current: false },
-  ];
 
   return (
     <div style={{ maxWidth: 860, margin: "0 auto" }}>
@@ -289,34 +285,6 @@ function AdminSettings({ user }) {
       </div>
 
       <div style={cardS}>
-        <div style={secHead}><Bell size={15} color="var(--gold)" />Social Media Links</div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".9rem" }}>
-          {[
-            { k: "facebook", label: "Facebook URL", placeholder: "https://facebook.com/statia" },
-            { k: "instagram", label: "Instagram URL", placeholder: "https://instagram.com/statia" },
-            { k: "twitter", label: "Twitter URL", placeholder: "https://twitter.com/statia" },
-            { k: "linkedin", label: "LinkedIn URL", placeholder: "https://linkedin.com/company/statia" },
-            { k: "youtube", label: "YouTube URL", placeholder: "https://youtube.com/@statia" }
-          ].map(({ k, label, placeholder }) => (
-            <div key={k}>
-              <div style={fLabel}>{label}</div>
-              <input
-                style={fInput}
-                type="url"
-                value={socialLinks[k]}
-                onChange={e => setSocialLinks(s => ({ ...s, [k]: e.target.value }))}
-                placeholder={placeholder}
-              />
-            </div>
-          ))}
-        </div>
-        <div style={{ marginTop: "1.1rem", display: "flex", alignItems: "center", gap: ".9rem" }}>
-          <button className="btn-g" onClick={saveSocialLinks} disabled={savingSocial} style={{ borderRadius: 5, padding: "9px 22px", fontSize: ".8rem" }}>{savingSocial ? "Saving…" : "Save Social Links"}</button>
-          {saved === "social" && <span style={{ color: "#34d399", fontSize: ".78rem", display: "flex", alignItems: "center", gap: 5 }}><CheckCircle size={14} />Saved!</span>}
-        </div>
-      </div>
-
-      <div style={cardS}>
         <div style={secHead}><Bell size={15} color="var(--gold)" />Notification Preferences</div>
         <div style={{ display: "flex", flexDirection: "column", gap: ".9rem" }}>
           {[
@@ -338,22 +306,18 @@ function AdminSettings({ user }) {
       </div>
 
       <div style={cardS}>
-        <div style={secHead}><ShieldCheck size={15} color="var(--gold)" />Active Sessions</div>
-        <div style={{ display: "flex", flexDirection: "column", gap: ".7rem" }}>
-          {sessions.map((s, i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: ".85rem 1rem", background: "rgba(255,255,255,.03)", borderRadius: 6, border: `1px solid ${s.current ? "rgba(201,168,76,.2)" : "rgba(255,255,255,.05)"}` }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 8, background: s.current ? "rgba(201,168,76,.12)" : "rgba(255,255,255,.06)", border: `1px solid ${s.current ? "rgba(201,168,76,.3)" : "rgba(255,255,255,.08)"}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  <User size={15} color={s.current ? "var(--gold)" : "rgba(255,255,255,.4)"} />
-                </div>
-                <div>
-                  <div style={{ color: s.current ? "#fff" : "rgba(255,255,255,.6)", fontSize: ".8rem", fontWeight: s.current ? 600 : 400 }}>{s.device} {s.current && <span style={{ background: "rgba(201,168,76,.15)", color: "var(--gold)", fontSize: ".6rem", padding: "1px 7px", borderRadius: 10, marginLeft: 4 }}>This device</span>}</div>
-                  <div style={{ color: "rgba(255,255,255,.3)", fontSize: ".7rem" }}>{s.location} · {s.time}</div>
-                </div>
-              </div>
-              {!s.current && <button style={{ background: "none", border: "1px solid rgba(248,113,113,.3)", borderRadius: 4, padding: "4px 10px", color: "#f87171", fontSize: ".68rem", cursor: "pointer" }}>Revoke</button>}
+        <div style={secHead}><ShieldCheck size={15} color="var(--gold)" />Active Session</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, padding: ".85rem 1rem", background: "rgba(255,255,255,.03)", borderRadius: 6, border: "1px solid rgba(201,168,76,.2)" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 8, background: "rgba(201,168,76,.12)", border: "1px solid rgba(201,168,76,.3)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <User size={15} color="var(--gold)" />
+          </div>
+          <div>
+            <div style={{ color: "#fff", fontSize: ".8rem", fontWeight: 600 }}>
+              {user?.name}
+              <span style={{ background: "rgba(201,168,76,.15)", color: "var(--gold)", fontSize: ".6rem", padding: "1px 7px", borderRadius: 10, marginLeft: 8 }}>This device</span>
             </div>
-          ))}
+            <div style={{ color: "rgba(255,255,255,.3)", fontSize: ".7rem" }}>{user?.email} · Active now</div>
+          </div>
         </div>
       </div>
 
@@ -373,7 +337,7 @@ function AdminSettings({ user }) {
 
 /* ── Main Admin Dashboard ────────────────────────────────────── */
 export default function AdminDashboard() {
-  const { user, logout } = useAppContext();
+  const { user, logout, setToast } = useAppContext();
   const navigate = useNavigate();
   const [tab, setTab] = useState("overview");
   const [leads, setLeads] = useState([]);
@@ -381,56 +345,90 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [addModal, setAddModal] = useState(null);
   const [editingProp, setEditingProp] = useState(null);
+  const [confirmState, setConfirmState] = useState(null);
+  const LEAD_LIMIT = 20;
+  const [leadPage, setLeadPage] = useState(1);
+  const [leadTotalPages, setLeadTotalPages] = useState(1);
+  const [leadTotal, setLeadTotal] = useState(0);
+
+  const fetchLeads = async (page = 1) => {
+    const data = await apiFetch(`/api/leads?page=${page}&limit=${LEAD_LIMIT}`);
+    setLeads(data.leads);
+    setLeadPage(data.page);
+    setLeadTotalPages(data.totalPages);
+    setLeadTotal(data.total);
+  };
 
   useEffect(() => {
     if (!user || user.role !== "ADMIN") {
       navigate("/login");
       return;
     }
-    Promise.all([apiFetch('/api/leads'), apiFetch('/api/properties')])
-      .then(([leadsData, propsData]) => { setLeads(leadsData); setProjects(propsData); })
-      .catch(console.error)
+    Promise.all([apiFetch(`/api/leads?page=1&limit=${LEAD_LIMIT}`), apiFetch('/api/properties')])
+      .then(([leadsData, propsData]) => {
+        setLeads(leadsData.leads);
+        setLeadPage(leadsData.page);
+        setLeadTotalPages(leadsData.totalPages);
+        setLeadTotal(leadsData.total);
+        setProjects(propsData.properties || []);
+      })
+      .catch(e => setToast({ msg: e.message || "Failed to load data.", type: "error" }))
       .finally(() => setLoading(false));
   }, []);
 
   const nav = [["overview", <BarChart3 size={16} />, "Overview"], ["properties", <Building2 size={16} />, "Properties"], ["leads", <Users size={16} />, "Leads"], ["settings", <Settings size={16} />, "Settings"]];
-  const metrics = [[<Building2 size={21} />, projects.length * 140 + "", "Total Units", "+12%", "#c9a84c"], [<BarChart3 size={21} />, projects.length, "Active Projects", "+3", "#60a5fa"], [<Users size={21} />, leads.length, "Leads", "+28%", "#34d399"], [<Eye size={21} />, "18.5k", "Views", "+45%", "#f87171"]];
+  const metrics = [[<Building2 size={21} />, projects.length * 140 + "", "Total Units", "+12%", "#c9a84c"], [<BarChart3 size={21} />, projects.length, "Active Projects", "+3", "#60a5fa"], [<Users size={21} />, leadTotal, "Leads", "+28%", "#34d399"], [<Eye size={21} />, "18.5k", "Views", "+45%", "#f87171"]];
   const sC = { NEW: "rgba(52,211,153,.14)|#34d399", CONTACTED: "rgba(245,158,11,.14)|#fbbf24", CLOSED: "rgba(107,114,128,.14)|#9ca3af" };
 
   const addLead = async (formData) => {
     try {
-      const lead = await apiFetch('/api/leads', { method: 'POST', body: formData });
-      const project = projects.find(p => p.id === formData.projectId);
-      setLeads(prev => [{ ...lead, project }, ...prev]);
-    } catch (e) { console.error(e); }
+      await apiFetch('/api/leads', { method: 'POST', body: formData });
+      await fetchLeads(1);
+      setToast({ msg: "Lead added successfully.", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to add lead.", type: "error" });
+    }
   };
 
   const deleteLead = async (id) => {
     try {
       await apiFetch('/api/leads/' + id, { method: 'DELETE' });
-      setLeads(prev => prev.filter(l => l.id !== id));
-    } catch (e) { console.error(e); }
+      const nextPage = leads.length === 1 && leadPage > 1 ? leadPage - 1 : leadPage;
+      await fetchLeads(nextPage);
+      setToast({ msg: "Lead deleted.", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to delete lead.", type: "error" });
+    }
   };
 
   const addProp = async (formData) => {
     try {
       const property = await apiFetch('/api/properties', { method: 'POST', body: formData });
       setProjects(prev => [property, ...prev]);
-    } catch (e) { console.error(e); }
+      setToast({ msg: "Property added successfully.", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to add property.", type: "error" });
+    }
   };
 
   const deleteProp = async (id) => {
     try {
       await apiFetch('/api/properties/' + id, { method: 'DELETE' });
       setProjects(prev => prev.filter(p => p.id !== id));
-    } catch (e) { console.error(e); }
+      setToast({ msg: "Property deleted.", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to delete property.", type: "error" });
+    }
   };
 
   const editProp = async (id, formData) => {
     try {
       const updated = await apiFetch('/api/properties/' + id, { method: 'PATCH', body: formData });
       setProjects(prev => prev.map(p => p.id === id ? updated : p));
-    } catch (e) { console.error(e); }
+      setToast({ msg: "Property updated.", type: "success" });
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to update property.", type: "error" });
+    }
   };
 
   const STATUS_CYCLE = { NEW: 'CONTACTED', CONTACTED: 'CLOSED', CLOSED: 'NEW' };
@@ -439,13 +437,22 @@ export default function AdminDashboard() {
     try {
       const updated = await apiFetch('/api/leads/' + id, { method: 'PATCH', body: { status: next } });
       setLeads(prev => prev.map(l => l.id === id ? { ...l, status: updated.status } : l));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      setToast({ msg: e.message || "Failed to update lead status.", type: "error" });
+    }
+  };
+
+  const requestDelete = (type, id, name) => setConfirmState({ type, id, name });
+  const handleConfirmDelete = async () => {
+    const { type, id } = confirmState;
+    setConfirmState(null);
+    if (type === 'lead') await deleteLead(id);
+    else await deleteProp(id);
   };
 
   function TH({ cols }) {
     return <thead><tr style={{ borderBottom: "1px solid rgba(201,168,76,.08)" }}>{cols.map(c => <th key={c} style={{ padding: ".75rem 1.1rem", textAlign: "left", fontSize: ".62rem", color: "rgba(255,255,255,.26)", fontWeight: 600, letterSpacing: ".12em", textTransform: "uppercase" }}>{c}</th>)}</tr></thead>;
   }
-
   function TB({ title, btn, onAdd, children }) {
     return (
       <div style={{ background: "#060f1e", border: "1px solid rgba(201,168,76,.1)", borderRadius: 8, overflow: "hidden" }}>
@@ -457,7 +464,6 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
   function ABs({ onEdit, onDelete }) {
     return (
       <div style={{ display: "flex", gap: 5 }}>
@@ -488,7 +494,7 @@ export default function AdminDashboard() {
         <td style={{ padding: ".9rem 1.1rem" }}>
           <span onClick={() => updateLeadStatus(l.id, status)} title="Click to advance status" style={{ background: sbg, color: sc, padding: "2px 8px", borderRadius: 4, fontSize: ".66rem", fontWeight: 600, cursor: "pointer", userSelect: "none" }}>{status}</span>
         </td>
-        <td style={{ padding: ".9rem 1.1rem" }}><ABs onDelete={() => deleteLead(l.id)} /></td>
+        <td style={{ padding: ".9rem 1.1rem" }}><ABs onDelete={() => requestDelete('lead', l.id, l.name)} /></td>
       </tr>
     );
   };
@@ -503,16 +509,25 @@ export default function AdminDashboard() {
 
   const Spinner = () => (
     <div style={{ padding: "4rem", display: "flex", justifyContent: "center" }}>
-      <div style={{ width: 32, height: 32, border: "3px solid rgba(201,168,76,.2)", borderTopColor: "var(--gold)", borderRadius: "50%", animation: "spin .8s linear infinite" }} />
+      <LoadingSpinner size={32} />
     </div>
   );
+
+  const Pagination = () => leadTotalPages > 1 ? (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 8, padding: "1rem 1.1rem", borderTop: "1px solid rgba(201,168,76,.07)" }}>
+      <button disabled={leadPage === 1} onClick={() => fetchLeads(leadPage - 1)} style={{ background: "none", border: "1px solid rgba(201,168,76,.2)", borderRadius: 4, padding: "5px 12px", color: leadPage === 1 ? "rgba(255,255,255,.2)" : "var(--gold)", fontSize: ".72rem", cursor: leadPage === 1 ? "default" : "pointer", fontFamily: "var(--sans)" }}>← Prev</button>
+      <span style={{ color: "rgba(255,255,255,.38)", fontSize: ".74rem" }}>Page {leadPage} of {leadTotalPages}</span>
+      <button disabled={leadPage === leadTotalPages} onClick={() => fetchLeads(leadPage + 1)} style={{ background: "none", border: "1px solid rgba(201,168,76,.2)", borderRadius: 4, padding: "5px 12px", color: leadPage === leadTotalPages ? "rgba(255,255,255,.2)" : "var(--gold)", fontSize: ".72rem", cursor: leadPage === leadTotalPages ? "default" : "pointer", fontFamily: "var(--sans)" }}>Next →</button>
+    </div>
+  ) : null;
 
   return (
     <>
       {modalEl}
       {editingProp && <EditPropertyModal property={editingProp} onClose={() => setEditingProp(null)} onSave={editProp} />}
-      <div style={{ display: "flex", height: "100vh", background: "#08111f", fontFamily: "var(--sans)" }}>
-        <aside style={{ width: 244, background: "#060f1e", borderRight: "1px solid rgba(201,168,76,.1)", display: "flex", flexDirection: "column", flexShrink: 0 }}>
+      {confirmState && <ConfirmModal name={confirmState.name} type={confirmState.type} onConfirm={handleConfirmDelete} onClose={() => setConfirmState(null)} />}
+      <div style={{ display: "flex", minHeight: "100vh", background: "#08111f", fontFamily: "var(--sans)", flexDirection: "row" }} className="admin-layout">
+        <aside style={{ width: 244, background: "#060f1e", borderRight: "1px solid rgba(201,168,76,.1)", display: "flex", flexDirection: "column", flexShrink: 0 }} className="admin-sidebar">
           <div style={{ padding: "1.6rem 1.4rem", borderBottom: "1px solid rgba(201,168,76,.1)" }}>
             <div style={{ fontFamily: "var(--serif)", fontSize: "1.7rem", color: "#fff", fontStyle: "italic", fontWeight: 300 }}>Statia</div>
             <div style={{ fontSize: ".54rem", color: "var(--gold)", letterSpacing: ".26em", textTransform: "uppercase" }}>Admin Portal</div>
@@ -547,7 +562,7 @@ export default function AdminDashboard() {
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,var(--gold),var(--gold2))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--navy)", fontWeight: 700, fontSize: ".78rem" }}>{user.name[0]}</div>
-                <div><div style={{ color: "#fff", fontSize: ".78rem", fontWeight: 600 }}>{user.name}</div><div style={{ color: "var(--gold)", fontSize: ".62rem", letterSpacing: ".08em" }}>Super Admin</div></div>
+                <div><div style={{ color: "#fff", fontSize: ".78rem", fontWeight: 600 }}>{user.name}</div><div style={{ color: "rgba(255,255,255,.26)", fontSize: ".66rem" }}>Super Admin</div></div>
               </div>
             </div>
           </div>
@@ -555,7 +570,7 @@ export default function AdminDashboard() {
           <div style={{ padding: "1.6rem 1.75rem" }}>
             {tab === "overview" && (
               <>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: "1rem", marginBottom: "1.6rem" }}>
+                <div className="admin-metrics">
                   {metrics.map(([ic, val, lbl, chg, col], i) => (
                     <div key={i} className="mc" style={{ padding: "1.5rem" }}>
                       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: ".9rem" }}>
@@ -596,7 +611,7 @@ export default function AdminDashboard() {
                           <td style={{ padding: ".85rem 1.1rem", color: "rgba(255,255,255,.46)", fontSize: ".78rem" }}>{p.location}</td>
                           <td style={{ padding: ".85rem 1.1rem", color: "var(--gold)", fontSize: ".8rem", fontWeight: 600 }}>{p.priceEGP.toLocaleString()}</td>
                           <td style={{ padding: ".85rem 1.1rem" }}><span style={{ background: p.status === "Ready to Move" ? "rgba(52,211,153,.12)" : "rgba(251,191,36,.12)", color: p.status === "Ready to Move" ? "#34d399" : "#fbbf24", padding: "2px 8px", borderRadius: 4, fontSize: ".66rem", fontWeight: 600 }}>{p.status}</span></td>
-                          <td style={{ padding: ".85rem 1.1rem" }}><ABs onEdit={() => setEditingProp(p)} onDelete={() => deleteProp(p.id)} /></td>
+                          <td style={{ padding: ".85rem 1.1rem" }}><ABs onEdit={() => setEditingProp(p)} onDelete={() => requestDelete('property', p.id, p.name)} /></td>
                         </tr>
                       ))}
                     </tbody>
@@ -608,10 +623,13 @@ export default function AdminDashboard() {
             {tab === "leads" && (
               <TB title="All Leads" btn="Add Lead" onAdd={() => setAddModal("lead")}>
                 {loading ? <Spinner /> : (
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                    <TH cols={["Name", "Phone", "Project", "Message", "Date", "Status", "Actions"]} />
-                    <tbody>{leads.map(l => <LeadRow key={l.id} l={l} />)}</tbody>
-                  </table>
+                  <>
+                    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <TH cols={["Name", "Phone", "Project", "Message", "Date", "Status", "Actions"]} />
+                      <tbody>{leads.map(l => <LeadRow key={l.id} l={l} />)}</tbody>
+                    </table>
+                    <Pagination />
+                  </>
                 )}
               </TB>
             )}

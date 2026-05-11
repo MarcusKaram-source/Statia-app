@@ -3,24 +3,20 @@ import { useNavigate } from "react-router-dom";
 import { Heart, ArrowLeft, MapPin, Home, Bath, Maximize2, Star } from "lucide-react";
 import api from "../api";
 import { useAppContext } from "../context/AppContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function FavoritesPage() {
-  const { lang } = useAppContext();
+  const { lang, user, setToast } = useAppContext();
   const navigate = useNavigate();
   const [favorites, setFavorites] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) { navigate("/login"); return; }
     const fetchFavorites = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) {
-          navigate("/login");
-          return;
-        }
-
         const response = await api.get("/api/favorites");
-        setFavorites(response.data);
+        setFavorites(response);
       } catch (error) {
         console.error("Error fetching favorites:", error);
       } finally {
@@ -29,7 +25,7 @@ export default function FavoritesPage() {
     };
 
     fetchFavorites();
-  }, [navigate]);
+  }, [navigate, user]);
 
   const handleRemoveFavorite = async (propertyId) => {
     try {
@@ -37,7 +33,7 @@ export default function FavoritesPage() {
       setFavorites(favorites.filter(fav => fav.projectId !== propertyId));
     } catch (error) {
       console.error("Error removing favorite:", error);
-      alert("Failed to remove property from favorites");
+      setToast({ msg: "Failed to remove property from favorites", type: "error" });
     }
   };
 
@@ -67,7 +63,7 @@ export default function FavoritesPage() {
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", background: "var(--cream)", paddingTop: 100, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <div style={{ width: 40, height: 40, border: "3px solid rgba(201,168,76,0.3)", borderTopColor: "var(--gold)", borderRadius: "50%", animation: "spin 1s linear infinite" }} />
+        <LoadingSpinner />
       </div>
     );
   }
@@ -77,7 +73,7 @@ export default function FavoritesPage() {
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 5%" }}>
         <div style={{ marginBottom: 40, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20 }}>
           <div>
-            <h1 style={{ fontFamily: "var(--serif)", fontSize: "2.5rem", color: "var(--navy)", fontWeight: 300, marginBottom: 8 }}>
+            <h1 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.8rem,4vw,2.5rem)", color: "var(--navy)", fontWeight: 300, marginBottom: 8 }}>
               {t.title}
             </h1>
             <p style={{ color: "var(--gray)", fontSize: "1.1rem" }}>
@@ -263,45 +259,46 @@ export default function FavoritesPage() {
                     </div>
                   </div>
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", paddingTop: 16, borderTop: "1px solid rgba(0,0,0,0.06)" }}>
-                    <div style={{ fontSize: "1.3rem", color: "var(--navy)", fontWeight: 600 }}>
-                      EGP {fav.project.priceEGP.toLocaleString()}
-                    </div>
-                    {fav.project.rating && (
-                      <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                        <Star size={12} fill="#fbbf24" stroke="#fbbf24" />
-                        <span style={{ color: "var(--gray)", fontSize: "0.85rem" }}>
-                          {fav.project.rating}
-                        </span>
+                    <div>
+                      <div style={{ fontSize: "1.3rem", color: "var(--navy)", fontWeight: 600 }}>
+                        EGP {fav.project.priceEGP.toLocaleString()}
                       </div>
-                    )}
+                      {fav.project.rating && (
+                        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 4 }}>
+                          <Star size={12} fill="#fbbf24" stroke="#fbbf24" />
+                          <span style={{ color: "var(--gray)", fontSize: "0.85rem" }}>
+                            {fav.project.rating}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/properties/${fav.projectId}`);
+                      }}
+                      style={{
+                        padding: "10px 20px",
+                        background: "var(--navy)",
+                        color: "white",
+                        border: "none",
+                        borderRadius: 6,
+                        cursor: "pointer",
+                        fontSize: "0.9rem",
+                        transition: "all 0.3s ease"
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "var(--gold)";
+                        e.currentTarget.style.color = "var(--navy)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "var(--navy)";
+                        e.currentTarget.style.color = "white";
+                      }}
+                    >
+                      {t.viewDetails}
+                    </button>
                   </div>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/properties/${fav.projectId}`);
-                    }}
-                    style={{
-                      padding: "10px 20px",
-                      background: "var(--navy)",
-                      color: "white",
-                      border: "none",
-                      borderRadius: 6,
-                      cursor: "pointer",
-                      fontSize: "0.9rem",
-                      transition: "all 0.3s ease",
-                      width: "100%"
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "var(--gold)";
-                      e.currentTarget.style.color = "var(--navy)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = "var(--navy)";
-                      e.currentTarget.style.color = "white";
-                    }}
-                  >
-                    {t.viewDetails}
-                  </button>
                 </div>
               </div>
             ))}

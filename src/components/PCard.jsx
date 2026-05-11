@@ -21,7 +21,7 @@ export default function PCard({ p, viewMode = "grid" }) {
 
   return (
     <div
-      className="pcard"
+      className={`pcard${isListView ? " pcard-list" : ""}`}
       onClick={handleClick}
       style={{
         background: "#fff",
@@ -43,22 +43,22 @@ export default function PCard({ p, viewMode = "grid" }) {
         e.currentTarget.style.boxShadow = "0 4px 18px rgba(10,22,40,.07)";
       }}
     >
-      <div style={{
+      <div className={isListView ? "pcard-list-img" : ""} style={{
         position: "relative",
         paddingTop: isListView ? "0" : "62%",
-        width: isListView ? "300px" : "100%",
+        width: isListView ? "min(300px,40%)" : "100%",
         flexShrink: 0
       }}>
         <div className="ci" style={{ position: "absolute", inset: 0 }}>
-          <img
-            src={p.img || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80'}
-            alt={p.name}
+          <img 
+            src={p.img || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80'} 
+            alt={p.name} 
             style={{
               width: "100%",
               height: isListView ? "100%" : "100%",
               objectFit: "cover",
               minHeight: isListView ? "200px" : "auto"
-            }}
+            }} 
           />
         </div>
         <div style={{ position: "absolute", top: 13, left: 13 }}>
@@ -71,7 +71,7 @@ export default function PCard({ p, viewMode = "grid" }) {
           <span style={{ color: p.status === "Ready to Move" ? "#86efac" : "#fcd34d", fontSize: ".64rem", letterSpacing: ".1em", textTransform: "uppercase", fontWeight: 600 }}>● {p.status}</span>
         </div>
       </div>
-      <div style={{
+      <div style={{ 
         padding: isListView ? "1.5rem" : "1.3rem",
         flex: 1,
         display: "flex",

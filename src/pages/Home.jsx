@@ -37,7 +37,7 @@ export default function Home() {
               <span style={{ color: "var(--gold)", fontSize: ".6rem", letterSpacing: ".26em", textTransform: "uppercase" }}>{fl}</span>
               <div style={{ width: 36, height: 1, background: "var(--gold)" }} />
             </div>
-            <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.7rem", color: "var(--navy)", fontWeight: 300, marginBottom: ".4rem" }}>{ep}</h2>
+            <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.8rem,4vw,2.7rem)", color: "var(--navy)", fontWeight: 300, marginBottom: ".4rem" }}>{ep}</h2>
             <p style={{ color: "var(--gray)", fontSize: ".88rem" }}>{hp}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(320px,1fr))", gap: "1.75rem" }}>
@@ -50,7 +50,7 @@ export default function Home() {
       </section>
       <section style={{ background: "linear-gradient(135deg,var(--navy),var(--navy2))", padding: "5.25rem 5%" }}>
         <div style={{ maxWidth: 1180, margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontFamily: "var(--serif)", fontSize: "2.7rem", color: "#fff", fontWeight: 300, marginBottom: ".45rem" }}>{wc}</h2>
+          <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.8rem,4vw,2.7rem)", color: "#fff", fontWeight: 300, marginBottom: ".45rem" }}>{wc}</h2>
           <div className="gline" style={{ width: 65, margin: "1.3rem auto 2.6rem" }} />
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "1.6rem" }}>
             {[

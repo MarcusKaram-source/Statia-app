@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useLocation, useNavigate } from "react-router-dom";
 import { MapPin, BedDouble, Bath, Square, Home, Star, MessageCircle, X } from "lucide-react";
 import { Lbl } from "../components/Shared";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useAppContext } from "../context/AppContext";
 import { fmtPrice } from "../assets/data";
 import { apiFetch } from "../api";
@@ -53,7 +54,7 @@ function BookingModal({ property, onClose }) {
             <input style={iS} type="tel" value={f.phone} onChange={set("phone")} placeholder="+20 100 000 0000" />
             <button className="btn-g" onClick={submit} disabled={sending} style={{ width: "100%", borderRadius: 4, padding: 12, fontSize: ".84rem", marginTop: ".4rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
               {sending
-                ? <div style={{ width: 15, height: 15, border: "2px solid rgba(10,22,40,.3)", borderTopColor: "var(--navy)", borderRadius: "50%", animation: "spin .7s linear infinite" }} />
+                ? <LoadingSpinner size={15} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" />
                 : "Request Viewing"}
             </button>
           </>
@@ -83,7 +84,7 @@ export default function Detail() {
 
   if (loading) return (
     <div style={{ minHeight: "100vh", paddingTop: 80, display: "flex", alignItems: "center", justifyContent: "center", background: "var(--cream)" }}>
-      <div style={{ width: 40, height: 40, border: "3px solid rgba(201,168,76,.2)", borderTopColor: "var(--gold)", borderRadius: "50%", animation: "spin .8s linear infinite" }} />
+      <LoadingSpinner size={40} trackColor="rgba(201,168,76,.2)" />
     </div>
   );
 
@@ -101,12 +102,12 @@ export default function Detail() {
         <div style={{ padding: "1.6rem 5%", maxWidth: 1400, margin: "0 auto" }}>
           <button onClick={() => navigate("/properties")} className="btn-o" style={{ borderRadius: 4, padding: "7px 17px", fontSize: ".76rem", display: "flex", alignItems: "center", gap: 5 }}>{back}</button>
         </div>
-        <div style={{ padding: "0 5% 5rem", maxWidth: 1400, margin: "0 auto", display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: "3.25rem" }}>
+        <div style={{ padding: "0 5% 5rem", maxWidth: 1400, margin: "0 auto" }} className="dt-grid">
           <div>
             <div style={{ borderRadius: 8, overflow: "hidden", marginBottom: ".7rem", paddingTop: "62%", position: "relative" }}>
               <img src={p.img || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80'} alt={p.name} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".6rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: ".6rem" }}>
               {[0, 1, 2].map(i => (
                 <div key={i} style={{ borderRadius: 4, overflow: "hidden", paddingTop: "62%", position: "relative", opacity: i === 0 ? 1 : .52, border: `2px solid ${i === 0 ? "var(--gold)" : "transparent"}`, cursor: "pointer" }}>
                   <img src={p.img || 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=700&q=80'} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
@@ -118,14 +119,14 @@ export default function Detail() {
             <div style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: ".9rem" }}>
               <MapPin size={12} color="var(--gold)" /><span style={{ color: "var(--gray)", fontSize: ".8rem" }}>{lang === "ar" ? p.locationAr : p.location}</span>
             </div>
-            <h1 style={{ fontFamily: "var(--serif)", fontSize: "2.5rem", color: "var(--navy)", fontWeight: 400, lineHeight: 1.1, marginBottom: ".45rem" }}>{lang === "ar" ? p.nameAr : p.name}</h1>
+            <h1 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.8rem,4vw,2.5rem)", color: "var(--navy)", fontWeight: 400, lineHeight: 1.1, marginBottom: ".45rem" }}>{lang === "ar" ? p.nameAr : p.name}</h1>
             <div style={{ display: "flex", gap: 4, marginBottom: "1.4rem" }}>
               {[...Array(5)].map((_, i) => <Star key={i} size={13} fill={i < Math.floor(p.rating || 0) ? "var(--gold)" : "none"} color="var(--gold)" />)}
               <span style={{ color: "var(--gray)", fontSize: ".8rem" }}>{p.rating}</span>
             </div>
             <div className="gline" style={{ marginBottom: "1.3rem" }} />
             <p style={{ color: "var(--gray)", lineHeight: 1.85, marginBottom: "1.6rem", fontSize: ".9rem" }}>{p.description}</p>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".8rem", marginBottom: "1.6rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(140px,1fr))", gap: ".8rem", marginBottom: "1.6rem" }}>
               {[
                 [<BedDouble size={16} />, lang === "en" ? "Beds" : "غرف", p.rooms],
                 [<Bath size={16} />, lang === "en" ? "Baths" : "حمامات", p.baths],

@@ -38,7 +38,6 @@ export default function Profile() {
     try {
       const updated = await apiFetch('/api/auth/profile', { method: 'PATCH', body: { name: profile.name, email: profile.email } });
       setUser(updated);
-      localStorage.setItem('user', JSON.stringify(updated));
       setProfileSaved(true);
       setTimeout(() => setProfileSaved(false), 2200);
     } catch (e) {
@@ -75,14 +74,14 @@ export default function Profile() {
       <div style={{ background: "linear-gradient(135deg,var(--navy),var(--navy2))", padding: "3rem 5% 4.5rem" }}>
         <div style={{ maxWidth: 960, margin: "0 auto" }}>
           <button onClick={() => navigate("/")} style={{ background: "none", border: "none", color: "rgba(255,255,255,.4)", cursor: "pointer", fontSize: ".78rem", display: "flex", alignItems: "center", gap: 6, marginBottom: "1.5rem", fontFamily: "var(--sans)", transition: "color .2s" }} onMouseEnter={e => e.currentTarget.style.color = "var(--gold)"} onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,.4)"}>← Back</button>
-          <div style={{ display: "flex", alignItems: "center", gap: "1.6rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "1.6rem", flexWrap: "wrap", rowGap: "1rem" }}>
             <div style={{ width: 80, height: 80, borderRadius: "50%", background: "linear-gradient(135deg,var(--gold),var(--gold2))", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--navy)", fontWeight: 800, fontSize: "2rem", boxShadow: "0 0 0 4px rgba(201,168,76,.22)", flexShrink: 0 }}>{user.name[0]}</div>
             <div style={{ flex: 1 }}>
               <div style={{ fontFamily: "var(--serif)", fontSize: "2rem", color: "#fff", fontWeight: 300 }}>{user.name}</div>
               <div style={{ color: "var(--gold)", fontSize: ".66rem", letterSpacing: ".18em", textTransform: "uppercase", marginBottom: ".25rem" }}>{user.role === "ADMIN" ? "⬡ Super Administrator" : "⬡ Member"}</div>
               <div style={{ color: "rgba(255,255,255,.38)", fontSize: ".78rem" }}>{user.email}</div>
             </div>
-            <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "1.5rem", flexWrap: "wrap", justifyContent: "center" }}>
               {stats.map(([v, l], i) => (
                 <div key={i} style={{ textAlign: "center" }}>
                   <div style={{ fontFamily: "var(--serif)", fontSize: "1.6rem", color: "var(--gold)", fontWeight: 700 }}>{v}</div>
@@ -107,7 +106,7 @@ export default function Profile() {
               <AlertCircle size={13} />{profileErr}
             </div>
           )}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: ".9rem" }}>
+          <div className="pf-2col">
             <div><div style={fLabel}>Full Name</div><input style={fInput} value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} /></div>
             <div><div style={fLabel}>Email Address</div><input style={fInput} type="email" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} /></div>
           </div>
@@ -130,11 +129,11 @@ export default function Profile() {
               <AlertCircle size={13} />{passErr}
             </div>
           )}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: ".9rem" }}>
+          <div className="pf-3col">
             <div>
               <div style={fLabel}>Current Password</div>
               <div style={{ position: "relative" }}>
-                <input style={{ ...fInput, paddingRight: 36 }} type={showCur ? "text" : "password"} value={passForm.current} onChange={e => setPassForm(p => ({ ...p, current: e.target.value }))} placeholder="•••••••" />
+                <input style={{ ...fInput, paddingRight: 36 }} type={showCur ? "text" : "password"} value={passForm.current} onChange={e => setPassForm(p => ({ ...p, current: e.target.value }))} placeholder="••••••••" />
                 <button onClick={() => setShowCur(!showCur)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--gray)", cursor: "pointer" }}>{showCur ? <EyeOff size={13} /> : <Eye size={13} />}</button>
               </div>
             </div>
@@ -177,15 +176,15 @@ export default function Profile() {
             <ShieldCheck size={15} color="var(--gold)" />
             <span style={{ color: "#fff", fontSize: ".88rem", fontWeight: 700 }}>Account Information</span>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: ".9rem" }}>
+          <div className="acct-grid">
             {[
               ["Account Type", user.role === "ADMIN" ? "Administrator" : "Standard Member"],
               ["Account Status", "Active"],
-              ["Email Verified", "Yes"],
+              ["Email Verified", user.isEmailVerified ? "Yes" : "No"],
             ].map(([l, v]) => (
               <div key={l} style={{ background: "rgba(255,255,255,.04)", borderRadius: 6, padding: ".9rem 1rem", border: "1px solid rgba(201,168,76,.1)" }}>
                 <div style={{ color: "rgba(255,255,255,.36)", fontSize: ".62rem", letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 3 }}>{l}</div>
-                <div style={{ color: v === "Active" || v === "Yes" ? "#34d399" : "rgba(255,255,255,.8)", fontSize: ".82rem", fontWeight: 600 }}>{v}</div>
+                <div style={{ color: v === "Active" || v === "Yes" ? "#34d399" : v === "No" ? "#f87171" : "rgba(255,255,255,.8)", fontSize: ".82rem", fontWeight: 600 }}>{v}</div>
               </div>
             ))}
           </div>

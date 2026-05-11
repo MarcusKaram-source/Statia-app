@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: statia-db
+    environment:
+      POSTGRES_USER: statia_user
+      POSTGRES_PASSWORD: statia_pass
+      POSTGRES_DB: statia_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - statia_pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  statia_pgdata:

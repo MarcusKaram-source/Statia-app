@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle, User } from "lucide-react";
 import { Lbl } from "../components/Shared";
+import LoadingSpinner from "../components/LoadingSpinner";
 import { useAppContext } from "../context/AppContext";
 import { apiFetch } from "../api";
 
@@ -14,6 +15,39 @@ export default function Signup() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [validation, setValidation] = useState({ name: "", email: "", pass: "", confirm: "" });
+
+  const validateField = (field, value) => {
+    let error = "";
+    
+    if (field === "name") {
+      if (!value.trim()) error = "Name is required";
+      else if (value.length < 2) error = "Name must be at least 2 characters";
+    }
+    
+    if (field === "email") {
+      if (!value.trim()) error = "Email is required";
+      else if (!/\S+@\S+\.\S+/.test(value)) error = "Please enter a valid email";
+    }
+    
+    if (field === "pass") {
+      if (!value) error = "Password is required";
+      else if (value.length < 8) error = "Password must be at least 8 characters";
+    }
+    
+    if (field === "confirm") {
+      if (!value) error = "Please confirm your password";
+      else if (value !== form.pass) error = "Passwords do not match";
+    }
+    
+    setValidation(prev => ({ ...prev, [field]: error }));
+  };
+
+  const handleInputChange = (field, value) => {
+    setForm(prev => ({ ...prev, [field]: value }));
+    validateField(field, value);
+    setErr("");
+  };
 
   const strength = (p) => {
     let s = 0;
@@ -39,9 +73,9 @@ export default function Signup() {
       await apiFetch('/api/auth/register', { method: 'POST', body: { name: form.name, email: form.email, password: form.pass } });
       setSuccess(true);
       const data = await apiFetch('/api/auth/login', { method: 'POST', body: { email: form.email, password: form.pass } });
-      login(data.user, data.token);
+      login(data.user);
       setTimeout(() => {
-        setToast({ msg: `Welcome, ${data.user.name}!`, type: "success" });
+        setToast({ msg: `Welcome, ${data.user.name}! Please check your email to verify your account.`, type: "success" });
         navigate("/");
       }, 1400);
     } catch (e) {
@@ -86,8 +120,9 @@ export default function Signup() {
               <CheckCircle size={32} color="#34d399" />
             </div>
             <h2 style={{ fontFamily: "var(--serif)", color: "#fff", fontSize: "2rem", fontWeight: 300, marginBottom: ".5rem" }}>Account Created!</h2>
-            <p style={{ color: "rgba(255,255,255,.38)", fontSize: ".88rem" }}>Signing you in automatically…</p>
-            <div style={{ width: 40, height: 40, border: "3px solid rgba(201,168,76,.2)", borderTopColor: "var(--gold)", borderRadius: "50%", animation: "spin .8s linear infinite", margin: "1.5rem auto 0" }} />
+            <p style={{ color: "rgba(255,255,255,.38)", fontSize: ".88rem", marginBottom: ".5rem" }}>A verification link has been sent to <strong style={{ color: "rgba(255,255,255,.7)" }}>{form.email}</strong>.</p>
+            <p style={{ color: "rgba(255,255,255,.3)", fontSize: ".8rem" }}>Signing you in…</p>
+            <LoadingSpinner size={40} trackColor="rgba(201,168,76,.2)" style={{ margin: "1.5rem auto 0" }} />
           </div>
         ) : (
           <>
@@ -138,7 +173,7 @@ export default function Signup() {
             </div>
 
             <button className="btn-g" onClick={handle} disabled={loading} style={{ width: "100%", padding: "13px", borderRadius: 6, fontSize: ".9rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              {loading ? <div style={{ width: 18, height: 18, border: "2px solid rgba(10,22,40,.3)", borderTopColor: "var(--navy)", borderRadius: "50%", animation: "spin .7s linear infinite" }} /> : <><User size={15} />Create Account</>}
+              {loading ? <LoadingSpinner size={18} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" /> : <><User size={15} />Create Account</>}
             </button>
 
             <div style={{ textAlign: "center", marginTop: "1.4rem" }}>

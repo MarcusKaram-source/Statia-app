@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch }) {
   return (
     <section style={{ padding: "0 5%", marginTop: -36, position: "relative", zIndex: 100 }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", background: "rgba(255,255,255,.97)", borderRadius: 8, padding: "1.6rem", boxShadow: "0 18px 56px rgba(10,22,40,.13),0 0 0 1px rgba(201,168,76,.16)" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 1fr auto", gap: ".9rem", alignItems: "end" }}>
+        <div className="sb-grid">
           <div>
             <Lbl>{t.search}</Lbl>
             <div style={{ position: "relative" }}>

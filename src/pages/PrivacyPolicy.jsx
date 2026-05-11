@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
         },
         {
           heading: "4. أمن البيانات",
-          text: "نفذ تدابير تقنية وتنظيمية مناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به أو التغيير أو الكشف أو التدمير."
+          text: "ننفذ تدابير تقنية وتنظيمية مناسبة لحماية معلوماتك الشخصية من الوصول غير المصرح به أو التغيير أو الكشف أو التدمير."
         },
         {
           heading: "5. حقوقك",
@@ -73,14 +73,14 @@ export default function PrivacyPolicy() {
   return (
     <div style={{ minHeight: "100vh", background: "var(--cream)", paddingTop: 80 }}>
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "3rem 5%" }}>
-        <button
+        <button 
           onClick={() => navigate("/")}
-          style={{
-            background: "none",
-            border: "none",
-            color: "var(--gold)",
-            cursor: "pointer",
-            fontSize: ".9rem",
+          style={{ 
+            background: "none", 
+            border: "none", 
+            color: "var(--gold)", 
+            cursor: "pointer", 
+            fontSize: ".9rem", 
             marginBottom: "2rem",
             display: "flex",
             alignItems: "center",
@@ -90,39 +90,39 @@ export default function PrivacyPolicy() {
           ← {lang === "en" ? "Back to Home" : "العودة للرئيسية"}
         </button>
 
-        <h1 style={{
-          fontFamily: "var(--serif)",
-          fontSize: "2.5rem",
-          color: "var(--navy)",
-          fontWeight: 300,
-          marginBottom: "1rem"
+        <h1 style={{ 
+          fontFamily: "var(--serif)", 
+          fontSize: "2.5rem", 
+          color: "var(--navy)", 
+          fontWeight: 300, 
+          marginBottom: "1rem" 
         }}>
           {t.title}
         </h1>
 
-        <p style={{
-          color: "var(--gray)",
-          fontSize: ".9rem",
-          marginBottom: "2.5rem"
+        <p style={{ 
+          color: "var(--gray)", 
+          fontSize: ".9rem", 
+          marginBottom: "2.5rem" 
         }}>
           {t.lastUpdated}
         </p>
 
         {t.sections.map((section, index) => (
           <div key={index} style={{ marginBottom: "2rem" }}>
-            <h2 style={{
-              fontFamily: "var(--serif)",
-              fontSize: "1.5rem",
-              color: "var(--navy)",
-              fontWeight: 400,
-              marginBottom: "0.75rem"
+            <h2 style={{ 
+              fontFamily: "var(--serif)", 
+              fontSize: "1.5rem", 
+              color: "var(--navy)", 
+              fontWeight: 400, 
+              marginBottom: "0.75rem" 
             }}>
               {section.heading}
             </h2>
-            <p style={{
-              color: "var(--gray)",
-              fontSize: "1rem",
-              lineHeight: 1.8
+            <p style={{ 
+              color: "var(--gray)", 
+              fontSize: "1rem", 
+              lineHeight: 1.8 
             }}>
               {section.text}
             </p>

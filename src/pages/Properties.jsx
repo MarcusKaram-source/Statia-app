@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight, Grid3X3, List } from "lucide-react";
 import PCard from "../components/PCard";
 import { useAppContext } from "../context/AppContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 import api from "../api";
 import AdvancedFilters from "../components/AdvancedFilters";
 
 export default function Properties() {
   const { lang } = useAppContext();
-  const navigate = useNavigate();
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, pages: 0 });
@@ -29,8 +28,8 @@ export default function Properties() {
       });
 
       const response = await api.get(`/api/properties?${params.toString()}`);
-      setProperties(response.data.properties);
-      setPagination(response.data.pagination);
+      setProperties(response.properties);
+      setPagination(response.pagination);
     } catch (error) {
       console.error("Error fetching properties:", error);
     } finally {
@@ -66,7 +65,10 @@ export default function Properties() {
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= pagination.pages) {
-      fetchProperties(newPage, currentFilters, sortBy, sortOrder);
+      setLoading(true);
+      fetchProperties(newPage, currentFilters, sortBy, sortOrder).finally(() => {
+        setLoading(false);
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -77,13 +79,13 @@ export default function Properties() {
   return (
     <div style={{ paddingTop: 80, background: "var(--cream)", minHeight: "100vh" }}>
       <div style={{ background: "linear-gradient(135deg,var(--navy),var(--navy2))", padding: "4.25rem 5% 6.25rem", textAlign: "center" }}>
-        <h1 style={{ fontFamily: "var(--serif)", fontSize: "3rem", color: "#fff", fontWeight: 300, marginBottom: ".45rem" }}>{h1}</h1>
+        <h1 style={{ fontFamily: "var(--serif)", fontSize: "clamp(2rem,5vw,3rem)", color: "#fff", fontWeight: 300, marginBottom: ".45rem" }}>{h1}</h1>
         <p style={{ color: "rgba(255,255,255,.42)", fontSize: ".88rem" }}>{pagination.total} {lang === "en" ? "exclusive listings" : "عقار حصري متاح"}</p>
       </div>
-
+      
       <div style={{ padding: "2rem 5%", maxWidth: 1400, margin: "0 auto" }}>
         <AdvancedFilters onFilterChange={handleFilterChange} onSearch={handleSearch} />
-
+        
         {/* Sort and View Controls */}
         <div style={{
           display: "flex",
@@ -93,54 +95,14 @@ export default function Properties() {
           flexWrap: "wrap",
           gap: 16
         }}>
-          <div style={{ display: "flex", gap: 12 }}>
-            <button
-              onClick={() => handleSortChange("priceEGP")}
-              style={{
-                padding: "8px 16px",
-                background: sortBy === "priceEGP" ? "var(--gold)" : "white",
-                color: sortBy === "priceEGP" ? "var(--navy)" : "var(--navy)",
-                border: "1px solid rgba(201,168,76,0.2)",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                transition: "all 0.3s ease"
-              }}
-            >
-              {lang === "en" ? "Price" : "السعر"} {sortBy === "priceEGP" && (sortOrder === "asc" ? "↑" : "↓")}
-            </button>
-            <button
-              onClick={() => handleSortChange("area")}
-              style={{
-                padding: "8px 16px",
-                background: sortBy === "area" ? "var(--gold)" : "white",
-                color: sortBy === "area" ? "var(--navy)" : "var(--navy)",
-                border: "1px solid rgba(201,168,76,0.2)",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                transition: "all 0.3s ease"
-              }}
-            >
-              {lang === "en" ? "Area" : "المساحة"} {sortBy === "area" && (sortOrder === "asc" ? "↑" : "↓")}
-            </button>
-            <button
-              onClick={() => handleSortChange("rating")}
-              style={{
-                padding: "8px 16px",
-                background: sortBy === "rating" ? "var(--gold)" : "white",
-                color: sortBy === "rating" ? "var(--navy)" : "var(--navy)",
-                border: "1px solid rgba(201,168,76,0.2)",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontSize: "0.9rem",
-                transition: "all 0.3s ease"
-              }}
-            >
-              {lang === "en" ? "Rating" : "التقييم"} {sortBy === "rating" && (sortOrder === "asc" ? "↑" : "↓")}
-            </button>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {[["priceEGP", lang === "en" ? "Price" : "السعر"], ["area", lang === "en" ? "Area" : "المساحة"], ["rating", lang === "en" ? "Rating" : "التقييم"]].map(([key, label]) => (
+              <button key={key} onClick={() => handleSortChange(key)} style={{ padding: "7px 13px", background: sortBy === key ? "var(--gold)" : "white", color: "var(--navy)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 6, cursor: "pointer", fontSize: ".82rem", transition: "all 0.3s ease", whiteSpace: "nowrap" }}>
+                {label} {sortBy === key && (sortOrder === "asc" ? "↑" : "↓")}
+              </button>
+            ))}
           </div>
-
+          
           <div style={{ display: "flex", gap: 8 }}>
             <button
               onClick={() => setViewMode("grid")}
@@ -175,15 +137,7 @@ export default function Properties() {
 
         {loading ? (
           <div style={{ textAlign: "center", padding: "4rem" }}>
-            <div style={{
-              width: 40,
-              height: 40,
-              border: "3px solid rgba(201,168,76,0.3)",
-              borderTopColor: "var(--gold)",
-              borderRadius: "50%",
-              animation: "spin 1s linear infinite",
-              margin: "0 auto"
-            }} />
+            <LoadingSpinner style={{ margin: "0 auto" }} />
           </div>
         ) : properties.length === 0 ? (
           <div style={{ textAlign: "center", padding: "4rem", color: "var(--gray)" }}>
@@ -209,8 +163,9 @@ export default function Properties() {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                gap: 8,
-                marginTop: 40
+                gap: 6,
+                marginTop: 40,
+                flexWrap: "wrap"
               }}>
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}

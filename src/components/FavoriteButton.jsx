@@ -1,32 +1,31 @@
 import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import api from "../api";
+import { useAppContext } from "../context/AppContext";
 
 export default function FavoriteButton({ propertyId, style = {} }) {
+  const { user, setToast } = useAppContext();
   const [isFavorite, setIsFavorite] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (!user) return;
     const checkFavorite = async () => {
       try {
-        const token = localStorage.getItem("token");
-        if (!token) return;
-
         const response = await api.get(`/api/favorites/check/${propertyId}`);
-        setIsFavorite(response.data.isFavorite);
+        setIsFavorite(response.isFavorite);
       } catch (error) {
         console.error("Error checking favorite:", error);
       }
     };
 
     checkFavorite();
-  }, [propertyId]);
+  }, [propertyId, user]);
 
   const toggleFavorite = async (e) => {
     e.stopPropagation();
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login to add properties to favorites");
+    if (!user) {
+      setToast({ msg: "Please login to add properties to favorites", type: "info" });
       return;
     }
 
@@ -41,7 +40,7 @@ export default function FavoriteButton({ propertyId, style = {} }) {
       }
     } catch (error) {
       console.error("Error toggling favorite:", error);
-      alert("Failed to update favorites. Please try again.");
+      setToast({ msg: "Failed to update favorites. Please try again.", type: "error" });
     } finally {
       setLoading(false);
     }

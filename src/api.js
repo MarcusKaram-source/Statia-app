@@ -1,4 +1,4 @@
-const _rawBase = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const _rawBase = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:5000' : '');
 // Strip trailing /api if present — all paths already include /api/ prefix
 const BASE = _rawBase.replace(/\/api\/?$/, '');
 

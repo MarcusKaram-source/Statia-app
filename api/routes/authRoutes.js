@@ -33,16 +33,15 @@ function handleValidation(req, res) {
 // Register
 router.post('/register', [
   body('name').trim().notEmpty().withMessage('Name is required').isLength({ min: 2 }).withMessage('Name must be at least 2 characters').escape(),
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
 ], async (req, res) => {
   try {
     if (!handleValidation(req, res)) return;
 
-    const { name, password } = req.body;
-    const email = req.body.email.toLowerCase().trim();
+    const { name, email, password } = req.body;
 
-    const existingUser = await prisma.user.findFirst({ where: { email: { equals: email, mode: 'insensitive' } } });
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'Email already exists' });
     }
@@ -66,16 +65,15 @@ router.post('/register', [
 
 // Login
 router.post('/login', [
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
   body('password').notEmpty().withMessage('Password is required'),
 ], async (req, res) => {
   try {
     if (!handleValidation(req, res)) return;
 
-    const email = req.body.email.toLowerCase().trim();
-    const { password } = req.body;
+    const { email, password } = req.body;
 
-    const user = await prisma.user.findFirst({ where: { email: { equals: email, mode: 'insensitive' } } });
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return res.status(400).json({ error: 'Invalid credentials' });
     }
@@ -179,14 +177,13 @@ router.post('/logout', (_req, res) => {
 // Update profile (authenticated)
 router.patch('/profile', auth, [
   body('name').trim().notEmpty().withMessage('Name is required').escape(),
-  body('email').isEmail().withMessage('Valid email is required'),
+  body('email').isEmail().withMessage('Valid email is required').normalizeEmail(),
 ], async (req, res) => {
   try {
     if (!handleValidation(req, res)) return;
 
-    const { name } = req.body;
-    const email = req.body.email.toLowerCase().trim();
-    const existing = await prisma.user.findFirst({ where: { email: { equals: email, mode: 'insensitive' } } });
+    const { name, email } = req.body;
+    const existing = await prisma.user.findUnique({ where: { email } });
     if (existing && existing.id !== req.user.id) {
       return res.status(400).json({ error: 'Email already in use' });
     }

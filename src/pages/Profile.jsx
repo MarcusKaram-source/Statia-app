@@ -107,8 +107,8 @@ export default function Profile() {
             </div>
           )}
           <div className="pf-2col">
-            <div><div style={fLabel}>Full Name</div><input id="profile-name" name="name" style={fInput} value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} /></div>
-            <div><div style={fLabel}>Email Address</div><input id="profile-email" name="email" style={fInput} type="email" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} /></div>
+            <div><div style={fLabel}>Full Name</div><input style={fInput} value={profile.name} onChange={e => setProfile(p => ({ ...p, name: e.target.value }))} /></div>
+            <div><div style={fLabel}>Email Address</div><input style={fInput} type="email" value={profile.email} onChange={e => setProfile(p => ({ ...p, email: e.target.value }))} /></div>
           </div>
           <div style={{ marginTop: "1.1rem", display: "flex", alignItems: "center", gap: ".9rem" }}>
             <button className="btn-g" onClick={saveProfile} disabled={savingProfile} style={{ borderRadius: 5, padding: "9px 22px", fontSize: ".8rem" }}>
@@ -133,20 +133,20 @@ export default function Profile() {
             <div>
               <div style={fLabel}>Current Password</div>
               <div style={{ position: "relative" }}>
-                <input id="current-password" name="current-password" style={{ ...fInput, paddingRight: 36 }} type={showCur ? "text" : "password"} value={passForm.current} onChange={e => setPassForm(p => ({ ...p, current: e.target.value }))} placeholder="••••••••" />
+                <input style={{ ...fInput, paddingRight: 36 }} type={showCur ? "text" : "password"} value={passForm.current} onChange={e => setPassForm(p => ({ ...p, current: e.target.value }))} placeholder="••••••••" />
                 <button onClick={() => setShowCur(!showCur)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--gray)", cursor: "pointer" }}>{showCur ? <EyeOff size={13} /> : <Eye size={13} />}</button>
               </div>
             </div>
             <div>
               <div style={fLabel}>New Password</div>
               <div style={{ position: "relative" }}>
-                <input id="new-password" name="new-password" style={{ ...fInput, paddingRight: 36 }} type={showNxt ? "text" : "password"} value={passForm.next} onChange={e => setPassForm(p => ({ ...p, next: e.target.value }))} placeholder="Min. 8 chars" />
+                <input style={{ ...fInput, paddingRight: 36 }} type={showNxt ? "text" : "password"} value={passForm.next} onChange={e => setPassForm(p => ({ ...p, next: e.target.value }))} placeholder="Min. 8 chars" />
                 <button onClick={() => setShowNxt(!showNxt)} style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--gray)", cursor: "pointer" }}>{showNxt ? <EyeOff size={13} /> : <Eye size={13} />}</button>
               </div>
             </div>
             <div>
               <div style={fLabel}>Confirm New Password</div>
-              <input id="confirm-password" name="confirm-password" style={fInput} type="password" value={passForm.confirm} onChange={e => setPassForm(p => ({ ...p, confirm: e.target.value }))} placeholder="Repeat password" />
+              <input style={fInput} type="password" value={passForm.confirm} onChange={e => setPassForm(p => ({ ...p, confirm: e.target.value }))} placeholder="Repeat password" />
             </div>
           </div>
           <div style={{ marginTop: "1.1rem", display: "flex", alignItems: "center", gap: ".9rem" }}>

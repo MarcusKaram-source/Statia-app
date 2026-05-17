@@ -68,13 +68,13 @@ export default function Login() {
           <Lbl light>Email Address</Lbl>
           <div className="auth-input-wrap">
             <Mail size={15} className="auth-icon" />
-            <input id="email" name="email" className="li-dark" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="your@email.com" type="email" style={{ borderRadius: 6 }} />
+            <input className="li-dark" value={email} onChange={e => setEmail(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="your@email.com" type="email" style={{ borderRadius: 6 }} />
           </div>
 
           <Lbl light>Password</Lbl>
           <div className="auth-input-wrap" style={{ marginBottom: ".5rem" }}>
             <Lock size={15} className="auth-icon" />
-            <input id="password" name="password" className="li-dark" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="••••••••" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
+            <input className="li-dark" value={pass} onChange={e => setPass(e.target.value)} onKeyDown={e => e.key === "Enter" && handle()} placeholder="••••••••" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
             <button className="auth-eye" onClick={() => setShowPass(!showPass)}>{showPass ? <EyeOff size={15} /> : <Eye size={15} />}</button>
           </div>
 

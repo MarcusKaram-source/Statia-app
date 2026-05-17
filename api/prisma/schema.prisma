@@ -31,29 +31,42 @@ enum Role {
 }
 
 model Project {
-  id          String       @id @default(uuid())
-  name        String
-  nameAr      String
-  location    String
-  locationAr  String?
-  type        String
-  status      String
-  priceEGP    Float
-  priceSAR    Float?
-  priceAED    Float?
-  rooms       Int
-  baths       Int
-  area        Float
-  badge       String?
-  rating      Float?
-  description String?
-  amenities   String[]
-  img         String?
-  createdAt   DateTime     @default(now())
-  leads       Lead[]
-  favorites   Favorite[]
-  comparisons Comparison[]
-  
+  id                  String       @id @default(uuid())
+  name                String
+  nameAr              String
+  location            String
+  locationAr          String?
+  type                String
+  status              String
+  priceEGP            Float
+  priceSAR            Float?
+  priceAED            Float?
+  rooms               Int
+  baths               Int
+  area                Float
+  badge               String?
+  rating              Float?
+  description         String?
+  amenities           String[]
+  img                 String?
+  projectName         String?
+  developerName       String?
+  locationLink        String?
+  deliveryYear        Int?
+  floorLevel          String?
+  maintenanceDeposit  Float?
+  paymentMethod       String?
+  downPayment         Float?
+  installmentValue    Float?
+  paymentFrequency    String?
+  installmentDuration Int?
+  notes               String[]
+  photos              String[]
+  createdAt           DateTime     @default(now())
+  leads               Lead[]
+  favorites           Favorite[]
+  comparisons         Comparison[]
+
   @@index([type])
   @@index([status])
   @@index([priceEGP])

@@ -11,13 +11,10 @@ export function AppProvider({ children }) {
   const [toast, setToast] = useState(null);
   const [filters, setFilters] = useState({ q: "", type: "", loc: "", price: "", rooms: "" });
 
-  // Restore session from httpOnly cookie on app load.
-  // Use raw fetch to avoid triggering the 401 unauthorized redirect
-  // handler when the user simply isn't logged in yet.
+  // Restore session from httpOnly cookie on app load
   useEffect(() => {
-    fetch('/api/auth/me', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => setUser(data?.user || null))
+    apiFetch('/api/auth/me', { method: 'GET' })
+      .then(data => setUser(data.user))
       .catch(() => setUser(null))
       .finally(() => setSessionLoading(false));
   }, []);

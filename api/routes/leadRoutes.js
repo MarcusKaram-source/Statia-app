@@ -61,16 +61,31 @@ router.get('/', auth, requireAdmin, async (req, res) => {
   }
 });
 
-// Update lead status (admin only)
+// Update lead (admin only) — accepts status, name, email, phone, message, projectId
 router.patch('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    const { status } = req.body;
-    if (!status || !VALID_STATUSES.includes(status)) {
-      return res.status(400).json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}` });
+    const { status, name, email, phone, message, projectId } = req.body;
+    const data = {};
+
+    if (status !== undefined) {
+      if (!VALID_STATUSES.includes(status)) {
+        return res.status(400).json({ error: `status must be one of: ${VALID_STATUSES.join(', ')}` });
+      }
+      data.status = status;
     }
+    if (name !== undefined) data.name = String(name).trim();
+    if (email !== undefined) data.email = String(email).trim();
+    if (phone !== undefined) data.phone = phone || null;
+    if (message !== undefined) data.message = message || null;
+    if ('projectId' in req.body) data.projectId = projectId || null;
+
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
     const lead = await prisma.lead.update({
       where: { id: req.params.id },
-      data: { status },
+      data,
       include: { project: true },
     });
     res.json(lead);

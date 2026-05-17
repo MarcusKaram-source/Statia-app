@@ -51,39 +51,31 @@ router.get('/', async (req, res) => {
     }
 
     // Filter by price range
-    const minPriceVal = minPrice !== undefined && minPrice !== '' ? parseFloat(minPrice) : NaN;
-    const maxPriceVal = maxPrice !== undefined && maxPrice !== '' ? parseFloat(maxPrice) : NaN;
-    if (!isNaN(minPriceVal) || !isNaN(maxPriceVal)) {
+    if (minPrice !== undefined || maxPrice !== undefined) {
       where.priceEGP = {};
-      if (!isNaN(minPriceVal)) where.priceEGP.gte = minPriceVal;
-      if (!isNaN(maxPriceVal)) where.priceEGP.lte = maxPriceVal;
+      if (minPrice !== undefined) where.priceEGP.gte = parseFloat(minPrice);
+      if (maxPrice !== undefined) where.priceEGP.lte = parseFloat(maxPrice);
     }
 
     // Filter by area range
-    const minAreaVal = minArea !== undefined && minArea !== '' ? parseFloat(minArea) : NaN;
-    const maxAreaVal = maxArea !== undefined && maxArea !== '' ? parseFloat(maxArea) : NaN;
-    if (!isNaN(minAreaVal) || !isNaN(maxAreaVal)) {
+    if (minArea !== undefined || maxArea !== undefined) {
       where.area = {};
-      if (!isNaN(minAreaVal)) where.area.gte = minAreaVal;
-      if (!isNaN(maxAreaVal)) where.area.lte = maxAreaVal;
+      if (minArea !== undefined) where.area.gte = parseFloat(minArea);
+      if (maxArea !== undefined) where.area.lte = parseFloat(maxArea);
     }
 
     // Filter by rooms range
-    const minRoomsVal = minRooms !== undefined && minRooms !== '' ? parseInt(minRooms) : NaN;
-    const maxRoomsVal = maxRooms !== undefined && maxRooms !== '' ? parseInt(maxRooms) : NaN;
-    if (!isNaN(minRoomsVal) || !isNaN(maxRoomsVal)) {
+    if (minRooms !== undefined || maxRooms !== undefined) {
       where.rooms = {};
-      if (!isNaN(minRoomsVal)) where.rooms.gte = minRoomsVal;
-      if (!isNaN(maxRoomsVal)) where.rooms.lte = maxRoomsVal;
+      if (minRooms !== undefined) where.rooms.gte = parseInt(minRooms);
+      if (maxRooms !== undefined) where.rooms.lte = parseInt(maxRooms);
     }
 
     // Filter by baths range
-    const minBathsVal = minBaths !== undefined && minBaths !== '' ? parseInt(minBaths) : NaN;
-    const maxBathsVal = maxBaths !== undefined && maxBaths !== '' ? parseInt(maxBaths) : NaN;
-    if (!isNaN(minBathsVal) || !isNaN(maxBathsVal)) {
+    if (minBaths !== undefined || maxBaths !== undefined) {
       where.baths = {};
-      if (!isNaN(minBathsVal)) where.baths.gte = minBathsVal;
-      if (!isNaN(maxBathsVal)) where.baths.lte = maxBathsVal;
+      if (minBaths !== undefined) where.baths.gte = parseInt(minBaths);
+      if (maxBaths !== undefined) where.baths.lte = parseInt(maxBaths);
     }
 
     // Filter by location
@@ -160,7 +152,13 @@ router.get('/:id', async (req, res) => {
 // Create a property (admin only)
 router.post('/', auth, requireAdmin, async (req, res) => {
   try {
-    const { name, nameAr, location, locationAr, type, status, priceEGP, priceSAR, priceAED, rooms, baths, area, badge, description, img, amenities } = req.body;
+    const {
+      name, nameAr, location, locationAr, type, status, priceEGP, priceSAR, priceAED,
+      rooms, baths, area, badge, description, img, amenities,
+      projectName, developerName, locationLink, deliveryYear, floorLevel,
+      maintenanceDeposit, paymentMethod, downPayment, installmentValue,
+      paymentFrequency, installmentDuration, notes, photos,
+    } = req.body;
     if (!name || !priceEGP) {
       return res.status(400).json({ error: 'name and priceEGP are required' });
     }
@@ -171,17 +169,30 @@ router.post('/', auth, requireAdmin, async (req, res) => {
         location: location || '',
         locationAr,
         type: type || 'Apartment',
-        status: status || 'Under Construction',
+        status: status || 'Available',
         priceEGP: parseFloat(priceEGP),
         priceSAR: priceSAR ? parseFloat(priceSAR) : null,
         priceAED: priceAED ? parseFloat(priceAED) : null,
-        rooms: parseInt(rooms) || 1,
-        baths: parseInt(baths) || 1,
+        rooms: parseInt(rooms) || 0,
+        baths: parseInt(baths) || 0,
         area: parseFloat(area) || 0,
         badge,
         description,
         img,
         amenities: amenities || [],
+        projectName: projectName || null,
+        developerName: developerName || null,
+        locationLink: locationLink || null,
+        deliveryYear: deliveryYear ? parseInt(deliveryYear) : null,
+        floorLevel: floorLevel || null,
+        maintenanceDeposit: maintenanceDeposit ? parseFloat(maintenanceDeposit) : null,
+        paymentMethod: paymentMethod || null,
+        downPayment: downPayment ? parseFloat(downPayment) : null,
+        installmentValue: installmentValue ? parseFloat(installmentValue) : null,
+        paymentFrequency: paymentFrequency || null,
+        installmentDuration: installmentDuration ? parseInt(installmentDuration) : null,
+        notes: notes || [],
+        photos: photos || [],
       },
     });
     res.status(201).json(property);
@@ -194,7 +205,13 @@ router.post('/', auth, requireAdmin, async (req, res) => {
 // Update a property (admin only)
 router.patch('/:id', auth, requireAdmin, async (req, res) => {
   try {
-    const { name, nameAr, location, locationAr, type, status, priceEGP, priceSAR, priceAED, rooms, baths, area, badge, description, img, amenities } = req.body;
+    const {
+      name, nameAr, location, locationAr, type, status, priceEGP, priceSAR, priceAED,
+      rooms, baths, area, badge, description, img, amenities,
+      projectName, developerName, locationLink, deliveryYear, floorLevel,
+      maintenanceDeposit, paymentMethod, downPayment, installmentValue,
+      paymentFrequency, installmentDuration, notes, photos,
+    } = req.body;
     const data = {};
     if (name !== undefined) data.name = name;
     if (nameAr !== undefined) data.nameAr = nameAr;
@@ -212,6 +229,19 @@ router.patch('/:id', auth, requireAdmin, async (req, res) => {
     if (description !== undefined) data.description = description;
     if (img !== undefined) data.img = img;
     if (amenities !== undefined) data.amenities = amenities;
+    if (projectName !== undefined) data.projectName = projectName || null;
+    if (developerName !== undefined) data.developerName = developerName || null;
+    if (locationLink !== undefined) data.locationLink = locationLink || null;
+    if (deliveryYear !== undefined) data.deliveryYear = deliveryYear ? parseInt(deliveryYear) : null;
+    if (floorLevel !== undefined) data.floorLevel = floorLevel || null;
+    if (maintenanceDeposit !== undefined) data.maintenanceDeposit = maintenanceDeposit ? parseFloat(maintenanceDeposit) : null;
+    if (paymentMethod !== undefined) data.paymentMethod = paymentMethod || null;
+    if (downPayment !== undefined) data.downPayment = downPayment ? parseFloat(downPayment) : null;
+    if (installmentValue !== undefined) data.installmentValue = installmentValue ? parseFloat(installmentValue) : null;
+    if (paymentFrequency !== undefined) data.paymentFrequency = paymentFrequency || null;
+    if (installmentDuration !== undefined) data.installmentDuration = installmentDuration ? parseInt(installmentDuration) : null;
+    if (notes !== undefined) data.notes = notes;
+    if (photos !== undefined) data.photos = photos;
     const property = await prisma.project.update({ where: { id: req.params.id }, data });
     res.json(property);
   } catch (error) {

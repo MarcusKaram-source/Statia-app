@@ -141,19 +141,19 @@ export default function Signup() {
             <Lbl light>Full Name</Lbl>
             <div className="auth-input-wrap">
               <User size={15} className="auth-icon" />
-              <input id="name" name="name" className="li-dark" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your full name" style={{ borderRadius: 6 }} />
+              <input className="li-dark" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="Your full name" style={{ borderRadius: 6 }} />
             </div>
 
             <Lbl light>Email Address</Lbl>
             <div className="auth-input-wrap">
               <Mail size={15} className="auth-icon" />
-              <input id="email" name="email" className="li-dark" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="your@email.com" type="email" style={{ borderRadius: 6 }} />
+              <input className="li-dark" value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} placeholder="your@email.com" type="email" style={{ borderRadius: 6 }} />
             </div>
 
             <Lbl light>Password</Lbl>
             <div className="auth-input-wrap" style={{ marginBottom: ".5rem" }}>
               <Lock size={15} className="auth-icon" />
-              <input id="password" name="password" className="li-dark" value={form.pass} onChange={e => setForm(f => ({ ...f, pass: e.target.value }))} placeholder="Min. 8 characters" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
+              <input className="li-dark" value={form.pass} onChange={e => setForm(f => ({ ...f, pass: e.target.value }))} placeholder="Min. 8 characters" type={showPass ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
               <button className="auth-eye" onClick={() => setShowPass(!showPass)}>{showPass ? <EyeOff size={14} /> : <Eye size={14} />}</button>
             </div>
             {form.pass && (
@@ -168,7 +168,7 @@ export default function Signup() {
             <Lbl light>Confirm Password</Lbl>
             <div className="auth-input-wrap">
               <Lock size={15} className="auth-icon" />
-              <input id="confirm" name="confirm" className="li-dark" value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} onKeyDown={e => e.key === "Enter" && handle()} placeholder="Repeat password" type={showConf ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
+              <input className="li-dark" value={form.confirm} onChange={e => setForm(f => ({ ...f, confirm: e.target.value }))} onKeyDown={e => e.key === "Enter" && handle()} placeholder="Repeat password" type={showConf ? "text" : "password"} style={{ borderRadius: 6, paddingRight: 42 }} />
               <button className="auth-eye" onClick={() => setShowConf(!showConf)}>{showConf ? <EyeOff size={14} /> : <Eye size={14} />}</button>
             </div>
 

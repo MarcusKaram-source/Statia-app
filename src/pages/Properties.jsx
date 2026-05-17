@@ -24,14 +24,7 @@ export default function Properties() {
         limit: pagination.limit.toString(),
         sortBy: sort,
         sortOrder: order,
-      });
-      // Only add filters that have actual values — empty strings cause NaN in backend
-      Object.entries(filters).forEach(([k, v]) => {
-        if (k === 'amenities') {
-          if (Array.isArray(v) && v.length > 0) params.set(k, v.join(','));
-        } else if (v !== '' && v !== null && v !== undefined) {
-          params.set(k, String(v));
-        }
+        ...filters
       });
 
       const response = await api.get(`/api/properties?${params.toString()}`);

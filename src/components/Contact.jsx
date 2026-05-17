@@ -44,19 +44,14 @@ export default function Contact() {
           </div>
           <h2 style={{ fontFamily: "var(--serif)", fontSize: "clamp(1.9rem,4vw,2.7rem)", color: "#fff", fontWeight: 300, lineHeight: 1.1, marginBottom: ".9rem" }}>{t.title}</h2>
           <p style={{ color: "rgba(255,255,255,.48)", fontSize: ".9rem", lineHeight: 1.8, marginBottom: "2.25rem" }}>{t.sub}</p>
-          {[
-            [<MessageCircle size={18} />, "WhatsApp", "+20 100 000 0000", "#25D366", "rgba(37,211,102,.1)", "https://wa.me/201000000000"],
-            [<Phone size={18} />, lang === "en" ? "Phone" : "هاتف", "+20 2 1234 5678", "var(--gold)", "rgba(201,168,76,.1)", "tel:+20212345678"],
-            [<Mail size={18} />, lang === "en" ? "Email" : "بريد", "info@statia.com", "var(--gold)", "rgba(201,168,76,.1)", "mailto:info@statia.com"],
-            [<MapPin size={18} />, lang === "en" ? "Office" : "مكتب", "New Cairo, Egypt", "var(--gold)", "rgba(201,168,76,.1)", "https://maps.google.com/?q=New+Cairo,+Egypt"],
-          ].map(([ic, lbl, val, col, bg, href], i) => (
-            <a key={i} href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noopener noreferrer" : undefined} style={{ display: "flex", alignItems: "center", gap: ".9rem", marginBottom: "1.1rem", textDecoration: "none" }}>
+          {[[<MessageCircle size={18} />, "WhatsApp", "+20 100 000 0000", "#25D366", "rgba(37,211,102,.1)"], [<Phone size={18} />, lang === "en" ? "Phone" : "هاتف", "+20 2 1234 5678", "var(--gold)", "rgba(201,168,76,.1)"], [<Mail size={18} />, lang === "en" ? "Email" : "بريد", "info@statia.com", "var(--gold)", "rgba(201,168,76,.1)"], [<MapPin size={18} />, lang === "en" ? "Office" : "مكتب", "New Cairo, Egypt", "var(--gold)", "rgba(201,168,76,.1)"]].map(([ic, lbl, val, col, bg], i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: ".9rem", marginBottom: "1.1rem", cursor: "pointer" }}>
               <div style={{ width: 42, height: 42, borderRadius: "50%", background: bg, border: `1px solid ${col}25`, display: "flex", alignItems: "center", justifyContent: "center", color: col, flexShrink: 0 }}>{ic}</div>
               <div>
                 <div style={{ fontSize: ".6rem", color: "rgba(255,255,255,.32)", letterSpacing: ".14em", textTransform: "uppercase" }}>{lbl}</div>
                 <div style={{ color: "rgba(255,255,255,.8)", fontSize: ".86rem" }}>{val}</div>
               </div>
-            </a>
+            </div>
           ))}
         </div>
         <div style={{ background: "rgba(255,255,255,.04)", backdropFilter: "blur(18px)", border: "1px solid rgba(201,168,76,.15)", borderRadius: 10, padding: "2.5rem" }}>
@@ -72,13 +67,13 @@ export default function Contact() {
               <h3 style={{ fontFamily: "var(--serif)", color: "#fff", fontSize: "1.4rem", marginBottom: "1.6rem", fontWeight: 400 }}>{t.send}</h3>
               <div className="form-2col">
                 {[[t.name, "name"], [t.phone, "phone"]].map(([lbl, k]) => (
-                  <div key={k}><Lbl light>{lbl}</Lbl><input id={k} name={k} className="li-dark" style={{ ...iS }} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} /></div>
+                  <div key={k}><Lbl light>{lbl}</Lbl><input className="li-dark" style={{ ...iS }} value={form[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} /></div>
                 ))}
               </div>
               <Lbl light>{t.email}</Lbl>
-              <input id="email" name="email" type="email" className="li-dark" style={{ ...iS }} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <input className="li-dark" style={{ ...iS }} value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
               <Lbl light>{t.msg}</Lbl>
-              <textarea id="msg" name="msg" className="li-dark" style={{ ...iS, height: 105, resize: "vertical" }} value={form.msg} onChange={e => setForm(f => ({ ...f, msg: e.target.value }))} />
+              <textarea className="li-dark" style={{ ...iS, height: 105, resize: "vertical" }} value={form.msg} onChange={e => setForm(f => ({ ...f, msg: e.target.value }))} />
               <button className="btn-g" onClick={handleSend} disabled={sending} style={{ borderRadius: 4, padding: 12, width: "100%", fontSize: ".86rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 }}>
                 {sending ? <LoadingSpinner size={16} thickness={2} color="var(--navy)" trackColor="rgba(10,22,40,.3)" /> : <>{t.send} <ArrowRight size={14} /></>}
               </button>

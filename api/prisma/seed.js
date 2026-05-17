@@ -22,13 +22,13 @@ async function main() {
 
   await prisma.user.upsert({
     where: { email: 'admin@statia.com' },
-    update: {},
+    update: { password: adminHash, role: 'ADMIN', failedAttempts: 0, lockUntil: null },
     create: { name: 'Admin', email: 'admin@statia.com', password: adminHash, role: 'ADMIN' },
   });
 
   await prisma.user.upsert({
     where: { email: 'user@statia.com' },
-    update: {},
+    update: { password: userHash },
     create: { name: 'Demo User', email: 'user@statia.com', password: userHash, role: 'USER' },
   });
 
